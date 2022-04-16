@@ -8,9 +8,7 @@ import { HttpClientModule } from '@angular/common/http'
 @NgModule({
   imports: [BrowserModule, OAuthModule.forRoot(), HttpClientModule],
   declarations: [AppComponent],
-  providers: [
-    { provide: OAuthStorage, useValue: localStorage }
-  ],
+  providers: [{ provide: OAuthStorage, useValue: localStorage }],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

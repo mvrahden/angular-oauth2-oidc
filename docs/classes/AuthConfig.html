@@ -9,7 +9,7 @@
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
 	   <link rel="stylesheet" href="../styles/style.css">
-        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
+        <link rel="stylesheet" href="../styles/dark.css">
     </head>
     <body>
 
@@ -30,6 +30,7 @@
                <!-- START CONTENT -->
                <div class="content class">
                    <div class="content-data">
+
 
 
 
@@ -905,7 +906,7 @@ the user in when using implicit flow.</p>
                 </tr>
                 <tr>
                     <td class="col-md-4">
-                        <i>Default value : </i><code>&#x27;;&#x27;</code>
+                        <i>Default value : </i><code>&#x27;&#x27;</code>
                     </td>
                 </tr>
                     <tr>
@@ -918,7 +919,7 @@ the user in when using implicit flow.</p>
                 <td class="col-md-4">
                     <div class="io-description"><p>final state sent to issuer is built as follows:
 state = nonce + nonceStateSeparator + additional state
-Default separator is &#39;;&#39; (encoded %3B).
+Default separator is &#39;&#39; (encoded %3B).
 In rare cases, this character might be forbidden or inconvenient to use by the issuer so it can be customized.</p>
 </div>
                 </td>
@@ -2162,90 +2163,90 @@ this case.</p>
   /**
    * The client&#x27;s id as registered with the auth server
    */
-  public clientId? &#x3D; &#x27;&#x27;;
+  public clientId? &#x3D; &#x27;&#x27;
 
   /**
    * The client&#x27;s redirectUri as registered with the auth server
    */
-  public redirectUri? &#x3D; &#x27;&#x27;;
+  public redirectUri? &#x3D; &#x27;&#x27;
 
   /**
    * An optional second redirectUri where the auth server
    * redirects the user to after logging out.
    */
-  public postLogoutRedirectUri? &#x3D; &#x27;&#x27;;
+  public postLogoutRedirectUri? &#x3D; &#x27;&#x27;
 
   /**
    * Defines whether to use &#x27;redirectUri&#x27; as a replacement
    * of &#x27;postLogoutRedirectUri&#x27; if the latter is not set.
    */
-  public redirectUriAsPostLogoutRedirectUriFallback? &#x3D; true;
+  public redirectUriAsPostLogoutRedirectUriFallback? &#x3D; true
 
   /**
    * The auth server&#x27;s endpoint that allows to log
    * the user in when using implicit flow.
    */
-  public loginUrl? &#x3D; &#x27;&#x27;;
+  public loginUrl? &#x3D; &#x27;&#x27;
 
   /**
    * The requested scopes
    */
-  public scope? &#x3D; &#x27;openid profile&#x27;;
+  public scope? &#x3D; &#x27;openid profile&#x27;
 
-  public resource? &#x3D; &#x27;&#x27;;
+  public resource? &#x3D; &#x27;&#x27;
 
-  public rngUrl? &#x3D; &#x27;&#x27;;
+  public rngUrl? &#x3D; &#x27;&#x27;
 
   /**
    * Defines whether to use OpenId Connect during
    * implicit flow.
    */
-  public oidc? &#x3D; true;
+  public oidc? &#x3D; true
 
   /**
    * Defines whether to request an access token during
    * implicit flow.
    */
-  public requestAccessToken? &#x3D; true;
+  public requestAccessToken? &#x3D; true
 
-  public options?: any &#x3D; null;
+  public options?: any &#x3D; null
 
   /**
    * The issuer&#x27;s uri.
    */
-  public issuer? &#x3D; &#x27;&#x27;;
+  public issuer? &#x3D; &#x27;&#x27;
 
   /**
    * The logout url.
    */
-  public logoutUrl? &#x3D; &#x27;&#x27;;
+  public logoutUrl? &#x3D; &#x27;&#x27;
 
   /**
    * Defines whether to clear the hash fragment after logging in.
    */
-  public clearHashAfterLogin? &#x3D; true;
+  public clearHashAfterLogin? &#x3D; true
 
   /**
    * Url of the token endpoint as defined by OpenId Connect and OAuth 2.
    */
-  public tokenEndpoint?: string &#x3D; null;
+  public tokenEndpoint?: string &#x3D; null
 
   /**
    * Url of the revocation endpoint as defined by OpenId Connect and OAuth 2.
    */
-  public revocationEndpoint?: string &#x3D; null;
+  public revocationEndpoint?: string &#x3D; null
 
   /**
    * Names of known parameters sent out in the TokenResponse. https://tools.ietf.org/html/rfc6749#section-5.1
    */
-  public customTokenParameters?: string[] &#x3D; [];
+  public customTokenParameters?: string[] &#x3D; []
 
   /**
    * Url of the userinfo endpoint as defined by OpenId Connect.
    */
-  public userinfoEndpoint?: string &#x3D; null;
+  public userinfoEndpoint?: string &#x3D; null
 
-  public responseType? &#x3D; &#x27;&#x27;;
+  public responseType? &#x3D; &#x27;&#x27;
 
   /**
    * Defines whether additional debug information should
@@ -2253,32 +2254,32 @@ this case.</p>
    * the verbosity of the console needs to be explicitly set
    * to include Debug level messages.
    */
-  public showDebugInformation? &#x3D; false;
+  public showDebugInformation? &#x3D; false
 
   /**
    * The redirect uri used when doing silent refresh.
    */
-  public silentRefreshRedirectUri? &#x3D; &#x27;&#x27;;
+  public silentRefreshRedirectUri? &#x3D; &#x27;&#x27;
 
-  public silentRefreshMessagePrefix? &#x3D; &#x27;&#x27;;
+  public silentRefreshMessagePrefix? &#x3D; &#x27;&#x27;
 
   /**
    * Set this to true to display the iframe used for
    * silent refresh for debugging.
    */
-  public silentRefreshShowIFrame? &#x3D; false;
+  public silentRefreshShowIFrame? &#x3D; false
 
   /**
    * Timeout for silent refresh.
    * @internal
    * depreacted b/c of typo, see silentRefreshTimeout
    */
-  public siletRefreshTimeout?: number &#x3D; 1000 * 20;
+  public siletRefreshTimeout?: number &#x3D; 1000 * 20
 
   /**
    * Timeout for silent refresh.
    */
-  public silentRefreshTimeout?: number &#x3D; 1000 * 20;
+  public silentRefreshTimeout?: number &#x3D; 1000 * 20
 
   /**
    * Some auth servers don&#x27;t allow using password flow
@@ -2288,7 +2289,7 @@ this case.</p>
    * it does not bring additional security and is therefore
    * as good as using no password.
    */
-  public dummyClientSecret?: string &#x3D; null;
+  public dummyClientSecret?: string &#x3D; null
 
   /**
    * Defines whether https is required.
@@ -2296,58 +2297,58 @@ this case.</p>
    * http for localhost, while every other domains need
    * to be used with https.
    */
-  public requireHttps?: boolean | &#x27;remoteOnly&#x27; &#x3D; &#x27;remoteOnly&#x27;;
+  public requireHttps?: boolean | &#x27;remoteOnly&#x27; &#x3D; &#x27;remoteOnly&#x27;
 
   /**
    * Defines whether every url provided by the discovery
    * document has to start with the issuer&#x27;s url.
    */
-  public strictDiscoveryDocumentValidation? &#x3D; true;
+  public strictDiscoveryDocumentValidation? &#x3D; true
 
   /**
    * JSON Web Key Set (https://tools.ietf.org/html/rfc7517)
    * with keys used to validate received id_tokens.
    * This is taken out of the disovery document. Can be set manually too.
    */
-  public jwks?: object &#x3D; null;
+  public jwks?: object &#x3D; null
 
   /**
    * Map with additional query parameter that are appended to
    * the request when initializing implicit flow.
    */
-  public customQueryParams?: object &#x3D; null;
+  public customQueryParams?: object &#x3D; null
 
-  public silentRefreshIFrameName? &#x3D; &#x27;angular-oauth-oidc-silent-refresh-iframe&#x27;;
+  public silentRefreshIFrameName? &#x3D; &#x27;angular-oauth-oidc-silent-refresh-iframe&#x27;
 
   /**
    * Defines when the token_timeout event should be raised.
    * If you set this to the default value 0.75, the event
    * is triggered after 75% of the token&#x27;s life time.
    */
-  public timeoutFactor? &#x3D; 0.75;
+  public timeoutFactor? &#x3D; 0.75
 
   /**
    * If true, the lib will try to check whether the user
    * is still logged in on a regular basis as described
    * in http://openid.net/specs/openid-connect-session-1_0.html#ChangeNotification
    */
-  public sessionChecksEnabled? &#x3D; false;
+  public sessionChecksEnabled? &#x3D; false
 
   /**
    * Interval in msec for checking the session
    * according to http://openid.net/specs/openid-connect-session-1_0.html#ChangeNotification
    */
-  public sessionCheckIntervall? &#x3D; 3 * 1000;
+  public sessionCheckIntervall? &#x3D; 3 * 1000
 
   /**
    * Url for the iframe used for session checks
    */
-  public sessionCheckIFrameUrl?: string &#x3D; null;
+  public sessionCheckIFrameUrl?: string &#x3D; null
 
   /**
    * Name of the iframe to use for session checks
    */
-  public sessionCheckIFrameName? &#x3D; &#x27;angular-oauth-oidc-check-session-iframe&#x27;;
+  public sessionCheckIFrameName? &#x3D; &#x27;angular-oauth-oidc-check-session-iframe&#x27;
 
   /**
    * This property has been introduced to disable at_hash checks
@@ -2356,51 +2357,51 @@ this case.</p>
    * Of course, when disabling these checks then we are bypassing
    * a security check which means we are more vulnerable.
    */
-  public disableAtHashCheck? &#x3D; false;
+  public disableAtHashCheck? &#x3D; false
 
   /**
    * Defines wether to check the subject of a refreshed token after silent refresh.
    * Normally, it should be the same as before.
    */
-  public skipSubjectCheck? &#x3D; false;
+  public skipSubjectCheck? &#x3D; false
 
-  public useIdTokenHintForSilentRefresh? &#x3D; false;
+  public useIdTokenHintForSilentRefresh? &#x3D; false
 
   /**
    * Defined whether to skip the validation of the issuer in the discovery document.
    * Normally, the discovey document&#x27;s url starts with the url of the issuer.
    */
-  public skipIssuerCheck? &#x3D; false;
+  public skipIssuerCheck? &#x3D; false
 
   /**
    * According to rfc6749 it is recommended (but not required) that the auth
    * server exposes the access_token&#x27;s life time in seconds.
    * This is a fallback value for the case this value is not exposed.
    */
-  public fallbackAccessTokenExpirationTimeInSec?: number;
+  public fallbackAccessTokenExpirationTimeInSec?: number
 
   /**
    * final state sent to issuer is built as follows:
    * state &#x3D; nonce + nonceStateSeparator + additional state
-   * Default separator is &#x27;;&#x27; (encoded %3B).
+   * Default separator is &#x27;&#x27; (encoded %3B).
    * In rare cases, this character might be forbidden or inconvenient to use by the issuer so it can be customized.
    */
-  public nonceStateSeparator? &#x3D; &#x27;;&#x27;;
+  public nonceStateSeparator? &#x3D; &#x27;&#x27;
 
   /**
    * Set this to true to use HTTP BASIC auth for AJAX calls
    */
-  public useHttpBasicAuth? &#x3D; false;
+  public useHttpBasicAuth? &#x3D; false
 
   /**
    * The window of time (in seconds) to allow the current time to deviate when validating id_token&#x27;s iat and exp values.
    */
-  public clockSkewInSec?: number;
+  public clockSkewInSec?: number
 
   /**
    * The interceptors waits this time span if there is no token
    */
-  public waitForTokenInMsec? &#x3D; 0;
+  public waitForTokenInMsec? &#x3D; 0
 
   /**
    * Set this to true if you want to use silent refresh together with
@@ -2408,24 +2409,24 @@ this case.</p>
    * with implicit flow, you don&#x27;t need to explicitly turn it on in
    * this case.
    */
-  public useSilentRefresh?;
+  public useSilentRefresh?
 
   /**
    * Code Flow is by defauld used together with PKCI which is also higly recommented.
    * You can disbale it here by setting this flag to true.
    * https://tools.ietf.org/html/rfc7636#section-1.1
    */
-  public disablePKCE? &#x3D; false;
+  public disablePKCE? &#x3D; false
 
   /**
    * Set this to true to preserve the requested route including query parameters after code flow login.
    * This setting enables deep linking for the code flow.
    */
-  public preserveRequestedRoute? &#x3D; false;
+  public preserveRequestedRoute? &#x3D; false
 
   constructor(json?: Partial&lt;AuthConfig&gt;) {
     if (json) {
-      Object.assign(this, json);
+      Object.assign(this, json)
     }
   }
 
@@ -2435,8 +2436,8 @@ this case.</p>
    * urls.
    */
   public openUri?: (uri: string) &#x3D;&gt; void &#x3D; (uri) &#x3D;&gt; {
-    location.href &#x3D; uri;
-  };
+    location.href &#x3D; uri
+  }
 }
 </code></pre>
     </div>
@@ -2444,14 +2445,15 @@ this case.</p>
 
 
 
-                   
+
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -2463,6 +2465,15 @@ this case.</p>
            </div>
        </div>
 
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
@@ -2472,8 +2483,8 @@ this case.</p>
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       
-       <script type="module" src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/menu-wc.js" defer></script>
        <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>

@@ -1,6 +1,5 @@
 'use strict';
 
-
 customElements.define('compodoc-menu', class extends HTMLElement {
     constructor() {
         super();
@@ -47,6 +46,11 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                 <li class="link">
                                     <a href="dependencies.html" data-type="chapter-link">
                                         <span class="icon ion-ios-list"></span>Dependencies
+                                    </a>
+                                </li>
+                                <li class="link">
+                                    <a href="properties.html" data-type="chapter-link">
+                                        <span class="icon ion-ios-apps"></span>Properties
                                     </a>
                                 </li>
                     </ul>
@@ -128,12 +132,12 @@ customElements.define('compodoc-menu', class extends HTMLElement {
                                     <li class="chapter inner">
                                         <a data-type="chapter-link" href="additional-documentation/authorization-servers.html" data-context-id="additional">
                                             <div class="menu-toggler linked" data-toggle="collapse" ${ isNormalMode ?
-                                            'data-target="#additional-page-64bc69bb1a8182c122d3c7f9e3c63e2d"' : 'data-target="#xs-additional-page-64bc69bb1a8182c122d3c7f9e3c63e2d"' }>
+                                            'data-target="#additional-page-2b1a4fad9e52d9d4ab632322a359d13b5c56587ec14714f91791909bdea17673a33cbbec5bda9a4b51e251e1de7ba270a691c761e665ecc6891c73474d21d242"' : 'data-target="#xs-additional-page-2b1a4fad9e52d9d4ab632322a359d13b5c56587ec14714f91791909bdea17673a33cbbec5bda9a4b51e251e1de7ba270a691c761e665ecc6891c73474d21d242"' }>
                                                 <span class="link-name">Authorization Servers</span>
                                                 <span class="icon ion-ios-arrow-down"></span>
                                             </div>
                                         </a>
-                                        <ul class="links collapse" ${ isNormalMode ? 'id="additional-page-64bc69bb1a8182c122d3c7f9e3c63e2d"' : 'id="xs-additional-page-64bc69bb1a8182c122d3c7f9e3c63e2d"' }>
+                                        <ul class="links collapse" ${ isNormalMode ? 'id="additional-page-2b1a4fad9e52d9d4ab632322a359d13b5c56587ec14714f91791909bdea17673a33cbbec5bda9a4b51e251e1de7ba270a691c761e665ecc6891c73474d21d242"' : 'id="xs-additional-page-2b1a4fad9e52d9d4ab632322a359d13b5c56587ec14714f91791909bdea17673a33cbbec5bda9a4b51e251e1de7ba270a691c761e665ecc6891c73474d21d242"' }>
                                             <li class="link for-chapter2">
                                                 <a href="additional-documentation/authorization-servers/using-identity-server.html" data-type="entity-link" data-context="sub-entity" data-context-id="additional">Using Identity Server</a>
                                             </li>

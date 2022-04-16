@@ -9,7 +9,7 @@
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
 	   <link rel="stylesheet" href="../styles/style.css">
-        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
+        <link rel="stylesheet" href="../styles/dark.css">
     </head>
     <body>
 
@@ -30,6 +30,7 @@
                <!-- START CONTENT -->
                <div class="content class">
                    <div class="content-data">
+
 
 
 
@@ -90,8 +91,9 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Abstract</span>
-                                <a href="#calcHash" >calcHash</a>
+                                <a href="#toSha256" >toSha256</a>
                             </li>
                         </ul>
                     </td>
@@ -116,26 +118,27 @@
         <tbody>
             <tr>
                 <td class="col-md-4">
-                    <a name="calcHash"></a>
+                    <a name="toSha256"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span class="modifier">Abstract</span>
-                        <span ><b>calcHash</b></span>
-                        <a href="#calcHash"><span class="icon ion-ios-link"></span></a>
+                        <span ><b>toSha256</b></span>
+                        <a href="#toSha256"><span class="icon ion-ios-link"></span></a>
                     </span>
                 </td>
             </tr>
             <tr>
                 <td class="col-md-4">
                     <span class="modifier-icon icon ion-ios-reset"></span>
-                    <code>calcHash(valueToHash: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, algorithm: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <code>toSha256(valueToHash: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="12"
-                            class="link-to-prism">projects/lib/src/token-validation/hash-handler.ts:12</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">projects/lib/src/token-validation/hash-handler.ts:9</a></div>
                 </td>
             </tr>
 
@@ -145,6 +148,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -166,25 +170,13 @@
 
 
                                 </tr>
-                                <tr>
-                                    <td>algorithm</td>
-                                    <td>
-                                                <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
-                                    </td>
-
-                                    <td>
-                                        No
-                                    </td>
-
-
-                                </tr>
                             </tbody>
                         </table>
                     </div>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;string&gt;</code>
+                        <b>Returns : </b>        <code><a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank" >string</a></code>
 
                     </div>
                     <div class="io-description">
@@ -204,94 +196,57 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@angular/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@angular/core&#x27;
 
-import { factory } from &#x27;./js-sha256&#x27;;
-const sha256 &#x3D; factory();
-
-import fsha256 from &#x27;fast-sha256&#x27;;
+import fsha256 from &#x27;fast-sha256&#x27;
 
 /**
  * Abstraction for crypto algorithms
  */
 export abstract class HashHandler {
-  abstract calcHash(valueToHash: string, algorithm: string): Promise&lt;string&gt;;
-}
-
-function decodeUTF8(s) {
-  if (typeof s !&#x3D;&#x3D; &#x27;string&#x27;) throw new TypeError(&#x27;expected string&#x27;);
-  var i,
-    d &#x3D; s,
-    b &#x3D; new Uint8Array(d.length);
-  for (i &#x3D; 0; i &lt; d.length; i++) b[i] &#x3D; d.charCodeAt(i);
-  return b;
-}
-
-function encodeUTF8(arr) {
-  var i,
-    s &#x3D; [];
-  for (i &#x3D; 0; i &lt; arr.length; i++) s.push(String.fromCharCode(arr[i]));
-  return s.join(&#x27;&#x27;);
+  public abstract toSha256(valueToHash: string): string
 }
 
 @Injectable()
 export class DefaultHashHandler implements HashHandler {
-  async calcHash(valueToHash: string, algorithm: string): Promise&lt;string&gt; {
-    // const encoder &#x3D; new TextEncoder();
-    // const hashArray &#x3D; await window.crypto.subtle.digest(algorithm, data);
-    // const data &#x3D; encoder.encode(valueToHash);
+  toSha256(valueToHash: string): string {
+    return DefaultHashHandler.encodeUTF8(
+      fsha256(DefaultHashHandler.decodeUTF8(valueToHash))
+    )
+  }
 
-    // const fhash &#x3D; fsha256(valueToHash);
+  private static decodeUTF8(s) {
+    if (typeof s !&#x3D;&#x3D; &#x27;string&#x27;) throw new TypeError(&#x27;expected string&#x27;)
+    let i: number
+    const d &#x3D; s
+    const b &#x3D; new Uint8Array(d.length)
+    for (i &#x3D; 0; i &lt; d.length; i++) b[i] &#x3D; d.charCodeAt(i)
+    return b
+  }
 
-    const candHash &#x3D; encodeUTF8(fsha256(decodeUTF8(valueToHash)));
-
-    // const hashArray &#x3D; (sha256 as any).array(valueToHash);
-    // // const hashString &#x3D; this.toHashString(hashArray);
-    // const hashString &#x3D; this.toHashString2(hashArray);
-
-    // console.debug(&#x27;hash orig - cand&#x27;, candHash, hashString);
-    // alert(1);
-
-    return candHash;
+  private static encodeUTF8(arr) {
+    let i: number
+    const s &#x3D; []
+    for (i &#x3D; 0; i &lt; arr.length; i++) s.push(String.fromCharCode(arr[i]))
+    return s.join(&#x27;&#x27;)
   }
 
   toHashString2(byteArray: number[]) {
-    let result &#x3D; &#x27;&#x27;;
+    let result &#x3D; &#x27;&#x27;
     for (let e of byteArray) {
-      result +&#x3D; String.fromCharCode(e);
+      result +&#x3D; String.fromCharCode(e)
     }
-    return result;
+    return result
   }
 
   toHashString(buffer: ArrayBuffer) {
-    const byteArray &#x3D; new Uint8Array(buffer);
-    let result &#x3D; &#x27;&#x27;;
+    const byteArray &#x3D; new Uint8Array(buffer)
+    let result &#x3D; &#x27;&#x27;
     for (let e of byteArray) {
-      result +&#x3D; String.fromCharCode(e);
+      result +&#x3D; String.fromCharCode(e)
     }
-    return result;
+    return result
   }
-
-  // hexString(buffer) {
-  //     const byteArray &#x3D; new Uint8Array(buffer);
-  //     const hexCodes &#x3D; [...byteArray].map(value &#x3D;&gt; {
-  //       const hexCode &#x3D; value.toString(16);
-  //       const paddedHexCode &#x3D; hexCode.padStart(2, &#x27;0&#x27;);
-  //       return paddedHexCode;
-  //     });
-
-  //     return hexCodes.join(&#x27;&#x27;);
-  //   }
-
-  // toHashString(hexString: string) {
-  //   let result &#x3D; &#x27;&#x27;;
-  //   for (let i &#x3D; 0; i &lt; hexString.length; i +&#x3D; 2) {
-  //     let hexDigit &#x3D; hexString.charAt(i) + hexString.charAt(i + 1);
-  //     let num &#x3D; parseInt(hexDigit, 16);
-  //     result +&#x3D; String.fromCharCode(num);
-  //   }
-  //   return result;
-  // }
 }
 </code></pre>
     </div>
@@ -299,14 +254,15 @@ export class DefaultHashHandler implements HashHandler {
 
 
 
-                   
+
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -318,6 +274,15 @@ export class DefaultHashHandler implements HashHandler {
            </div>
        </div>
 
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
@@ -327,8 +292,8 @@ export class DefaultHashHandler implements HashHandler {
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       
-       <script type="module" src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/menu-wc.js" defer></script>
        <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>

@@ -9,7 +9,7 @@
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
 	   <link rel="stylesheet" href="../styles/style.css">
-        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
+        <link rel="stylesheet" href="../styles/dark.css">
     </head>
     <body>
 
@@ -30,6 +30,7 @@
                <!-- START CONTENT -->
                <div class="content class">
                    <div class="content-data">
+
 
 
 
@@ -141,8 +142,8 @@ Can be used to skip validation (at your own risk).</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="11"
-                            class="link-to-prism">projects/lib/src/token-validation/null-validation-handler.ts:11</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="12"
+                            class="link-to-prism">projects/lib/src/token-validation/null-validation-handler.ts:12</a></div>
                 </td>
             </tr>
 
@@ -152,6 +153,7 @@ Can be used to skip validation (at your own risk).</p>
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -179,7 +181,7 @@ Can be used to skip validation (at your own risk).</p>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;boolean&gt;</code>
+                        <b>Returns : </b>    <code>Observable&lt;boolean&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -209,8 +211,8 @@ Can be used to skip validation (at your own risk).</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="8"
-                            class="link-to-prism">projects/lib/src/token-validation/null-validation-handler.ts:8</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="9"
+                            class="link-to-prism">projects/lib/src/token-validation/null-validation-handler.ts:9</a></div>
                 </td>
             </tr>
 
@@ -220,6 +222,7 @@ Can be used to skip validation (at your own risk).</p>
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -247,7 +250,7 @@ Can be used to skip validation (at your own risk).</p>
                     <div>
                     </div>
                     <div class="io-description">
-                        <b>Returns : </b>    <code>Promise&lt;any&gt;</code>
+                        <b>Returns : </b>    <code>Observable&lt;any&gt;</code>
 
                     </div>
                     <div class="io-description">
@@ -267,18 +270,19 @@ Can be used to skip validation (at your own risk).</p>
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { ValidationHandler, ValidationParams } from &#x27;./validation-handler&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Observable, of } from &#x27;rxjs&#x27;
+import { ValidationHandler, ValidationParams } from &#x27;./validation-handler&#x27;
 
 /**
  * A validation handler that isn&#x27;t validating nothing.
  * Can be used to skip validation (at your own risk).
  */
 export class NullValidationHandler implements ValidationHandler {
-  validateSignature(validationParams: ValidationParams): Promise&lt;any&gt; {
-    return Promise.resolve(null);
+  validateSignature(validationParams: ValidationParams): Observable&lt;any&gt; {
+    return of(null)
   }
-  validateAtHash(validationParams: ValidationParams): Promise&lt;boolean&gt; {
-    return Promise.resolve(true);
+  validateAtHash(validationParams: ValidationParams): Observable&lt;boolean&gt; {
+    return of(true)
   }
 }
 </code></pre>
@@ -287,14 +291,15 @@ export class NullValidationHandler implements ValidationHandler {
 
 
 
-                   
+
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -306,6 +311,15 @@ export class NullValidationHandler implements ValidationHandler {
            </div>
        </div>
 
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'class';
@@ -315,8 +329,8 @@ export class NullValidationHandler implements ValidationHandler {
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       
-       <script type="module" src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/menu-wc.js" defer></script>
        <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>

@@ -9,7 +9,7 @@
 
         <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
 	   <link rel="stylesheet" href="../styles/style.css">
-        <link rel="stylesheet" href="../styles/dark.css" media="(prefers-color-scheme: dark)">
+        <link rel="stylesheet" href="../styles/dark.css">
     </head>
     <body>
 
@@ -30,6 +30,7 @@
                <!-- START CONTENT -->
                <div class="content interceptor">
                    <div class="content-data">
+
 
 
 
@@ -204,6 +205,7 @@
 
                     <div class="io-description">
                         <b>Parameters :</b>
+                        
                         <table class="params">
                             <thead>
                                 <tr>
@@ -259,15 +261,15 @@
 
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
-        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Optional } from &#x27;@angular/core&#x27;;
+        <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Optional } from &#x27;@angular/core&#x27;
 
 import {
   HttpEvent,
   HttpHandler,
   HttpInterceptor,
   HttpRequest,
-} from &#x27;@angular/common/http&#x27;;
-import { Observable, of, merge } from &#x27;rxjs&#x27;;
+} from &#x27;@angular/common/http&#x27;
+import { Observable, of, merge } from &#x27;rxjs&#x27;
 import {
   catchError,
   filter,
@@ -275,10 +277,10 @@ import {
   take,
   mergeMap,
   timeout,
-} from &#x27;rxjs/operators&#x27;;
-import { OAuthResourceServerErrorHandler } from &#x27;./resource-server-error-handler&#x27;;
-import { OAuthModuleConfig } from &#x27;../oauth-module.config&#x27;;
-import { OAuthService } from &#x27;../oauth-service&#x27;;
+} from &#x27;rxjs/operators&#x27;
+import { OAuthResourceServerErrorHandler } from &#x27;./resource-server-error-handler&#x27;
+import { OAuthModuleConfig } from &#x27;../oauth-module.config&#x27;
+import { OAuthService } from &#x27;../oauth-service&#x27;
 
 @Injectable()
 export class DefaultOAuthInterceptor implements HttpInterceptor {
@@ -290,45 +292,45 @@ export class DefaultOAuthInterceptor implements HttpInterceptor {
 
   private checkUrl(url: string): boolean {
     if (this.moduleConfig.resourceServer.customUrlValidation) {
-      return this.moduleConfig.resourceServer.customUrlValidation(url);
+      return this.moduleConfig.resourceServer.customUrlValidation(url)
     }
 
     if (this.moduleConfig.resourceServer.allowedUrls) {
       return !!this.moduleConfig.resourceServer.allowedUrls.find((u) &#x3D;&gt;
         url.toLowerCase().startsWith(u.toLowerCase())
-      );
+      )
     }
 
-    return true;
+    return true
   }
 
   public intercept(
     req: HttpRequest&lt;any&gt;,
     next: HttpHandler
   ): Observable&lt;HttpEvent&lt;any&gt;&gt; {
-    const url &#x3D; req.url.toLowerCase();
+    const url &#x3D; req.url.toLowerCase()
 
     if (
       !this.moduleConfig ||
       !this.moduleConfig.resourceServer ||
       !this.checkUrl(url)
     ) {
-      return next.handle(req);
+      return next.handle(req)
     }
 
-    const sendAccessToken &#x3D; this.moduleConfig.resourceServer.sendAccessToken;
+    const sendAccessToken &#x3D; this.moduleConfig.resourceServer.sendAccessToken
 
     if (!sendAccessToken) {
       return next
         .handle(req)
-        .pipe(catchError((err) &#x3D;&gt; this.errorHandler.handleError(err)));
+        .pipe(catchError((err) &#x3D;&gt; this.errorHandler.handleError(err)))
     }
 
     return merge(
       of(this.oAuthService.getAccessToken()).pipe(filter((token) &#x3D;&gt; !!token)),
       this.oAuthService.events.pipe(
         filter((e) &#x3D;&gt; e.type &#x3D;&#x3D;&#x3D; &#x27;token_received&#x27;),
-        timeout(this.oAuthService.waitForTokenInMsec || 0),
+        timeout(this.oAuthService.config.waitForTokenInMsec || 0),
         catchError((_) &#x3D;&gt; of(null)), // timeout is not an error
         map((_) &#x3D;&gt; this.oAuthService.getAccessToken())
       )
@@ -336,16 +338,16 @@ export class DefaultOAuthInterceptor implements HttpInterceptor {
       take(1),
       mergeMap((token) &#x3D;&gt; {
         if (token) {
-          const header &#x3D; &#x27;Bearer &#x27; + token;
-          const headers &#x3D; req.headers.set(&#x27;Authorization&#x27;, header);
-          req &#x3D; req.clone({ headers });
+          const header &#x3D; &#x27;Bearer &#x27; + token
+          const headers &#x3D; req.headers.set(&#x27;Authorization&#x27;, header)
+          req &#x3D; req.clone({ headers })
         }
 
         return next
           .handle(req)
-          .pipe(catchError((err) &#x3D;&gt; this.errorHandler.handleError(err)));
+          .pipe(catchError((err) &#x3D;&gt; this.errorHandler.handleError(err)))
       })
-    );
+    )
   }
 }
 </code></pre>
@@ -357,14 +359,15 @@ export class DefaultOAuthInterceptor implements HttpInterceptor {
 
 
 
-                   
+
+
 
 
 
 
                    </div><div class="search-results">
     <div class="has-results">
-        <h1 class="search-results-title"><span class='search-results-count'></span> result-matching "<span class='search-query'></span>"</h1>
+        <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
         <ul class="search-results-list"></ul>
     </div>
     <div class="no-results">
@@ -376,6 +379,15 @@ export class DefaultOAuthInterceptor implements HttpInterceptor {
            </div>
        </div>
 
+          <label class="dark-mode-switch">
+               <input type="checkbox">
+               <span class="slider">
+                    <svg class="slider-icon" viewBox="0 0 24 24" fill="none" height="20" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" width="20" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"></path>
+                    </svg>
+               </span>
+          </label>
+
        <script>
             var COMPODOC_CURRENT_PAGE_DEPTH = 1;
             var COMPODOC_CURRENT_PAGE_CONTEXT = 'interceptor';
@@ -385,8 +397,8 @@ export class DefaultOAuthInterceptor implements HttpInterceptor {
 
        <script src="../js/libs/custom-elements.min.js"></script>
        <script src="../js/libs/lit-html.js"></script>
-       
-       <script type="module" src="../js/menu-wc.js" defer></script>
+
+       <script src="../js/menu-wc.js" defer></script>
        <script nomodule src="../js/menu-wc_es5.js" defer></script>
 
        <script src="../js/libs/bootstrap-native.js"></script>
