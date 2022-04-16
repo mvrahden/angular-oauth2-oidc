@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges } from '@angular/core';
+import { Component, Input, OnInit, OnChanges } from '@angular/core'
 
 @Component({
   selector: 'date-component',
@@ -7,16 +7,16 @@ import { Component, Input, OnInit, OnChanges } from '@angular/core';
   `,
 })
 export class DateComponent implements OnInit, OnChanges {
-  @Input() date: string;
+  @Input() date: string
 
-  day;
-  month;
-  year;
-  hour;
-  minute;
+  day
+  month
+  year
+  hour
+  minute
 
   constructor() {
-    console.debug('ctrl');
+    console.debug('ctrl')
   }
 
   ngOnInit() {}
@@ -24,15 +24,15 @@ export class DateComponent implements OnInit, OnChanges {
   ngOnChanges(change) {
     // if(change.date) { ... }
 
-    console.debug('change', change);
+    console.debug('change', change)
 
-    let date = new Date(this.date);
+    let date = new Date(this.date)
 
-    this.day = date.getDate();
-    this.month = date.getMonth() + 1;
-    this.year = date.getFullYear();
+    this.day = date.getDate()
+    this.month = date.getMonth() + 1
+    this.year = date.getFullYear()
 
-    this.hour = date.getHours();
-    this.minute = date.getMinutes();
+    this.hour = date.getHours()
+    this.minute = date.getMinutes()
   }
 }

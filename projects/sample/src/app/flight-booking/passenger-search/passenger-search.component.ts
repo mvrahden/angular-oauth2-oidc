@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { OAuthService } from 'angular-oauth2-oidc';
+import { Component, OnInit } from '@angular/core'
+import { OAuthService } from 'angular-oauth2-oidc'
 
 @Component({
   template: `
@@ -13,6 +13,6 @@ export class PassengerSearchComponent implements OnInit {
   ngOnInit() {}
 
   refresh() {
-    this.oauthService.silentRefresh();
+    this.oauthService.silentRefresh()
   }
 }

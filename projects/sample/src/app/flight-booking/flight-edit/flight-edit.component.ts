@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { Component, OnInit } from '@angular/core'
+import { ActivatedRoute } from '@angular/router'
 
 @Component({
   template: `
@@ -26,12 +26,12 @@ import { ActivatedRoute } from '@angular/router';
   `,
 })
 export class FlightEditComponent implements OnInit {
-  public id: string;
+  public id: string
 
   constructor(private route: ActivatedRoute) {
     route.params.subscribe((p) => {
-      this.id = p['id'];
-    });
+      this.id = p['id']
+    })
   }
 
   ngOnInit() {}
@@ -39,17 +39,17 @@ export class FlightEditComponent implements OnInit {
   exitWarning = {
     show: false,
     resolve: null,
-  };
+  }
 
   decide(decision: boolean) {
-    this.exitWarning.show = false;
-    this.exitWarning.resolve(decision);
+    this.exitWarning.show = false
+    this.exitWarning.resolve(decision)
   }
 
   canDeactivate() {
-    this.exitWarning.show = true;
+    this.exitWarning.show = true
     return new Promise((resolve) => {
-      this.exitWarning.resolve = resolve;
-    });
+      this.exitWarning.resolve = resolve
+    })
   }
 }

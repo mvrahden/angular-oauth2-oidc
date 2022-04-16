@@ -1,25 +1,25 @@
-import { DateTimeProvider, SystemDateTimeProvider } from './date-time-provider';
-import { OAuthStorage, OAuthLogger } from './types';
-import { NgModule, ModuleWithProviders } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { NgModule, ModuleWithProviders } from '@angular/core'
+import { CommonModule } from '@angular/common'
+import { HTTP_INTERCEPTORS } from '@angular/common/http'
 
-import { OAuthService } from './oauth-service';
-import { UrlHelperService } from './url-helper.service';
+import { DateTimeProvider, SystemDateTimeProvider } from './date-time-provider'
+import { OAuthStorage, OAuthLogger } from './types'
+import { OAuthService } from './oauth-service'
+import { UrlHelperService } from './url-helper.service'
 
-import { OAuthModuleConfig } from './oauth-module.config';
+import { OAuthModuleConfig } from './oauth-module.config'
 import {
   OAuthResourceServerErrorHandler,
   OAuthNoopResourceServerErrorHandler,
-} from './interceptors/resource-server-error-handler';
-import { DefaultOAuthInterceptor } from './interceptors/default-oauth.interceptor';
-import { ValidationHandler } from './token-validation/validation-handler';
-import { NullValidationHandler } from './token-validation/null-validation-handler';
-import { createDefaultLogger, createDefaultStorage } from './factories';
+} from './interceptors/resource-server-error-handler'
+import { DefaultOAuthInterceptor } from './interceptors/default-oauth.interceptor'
+import { ValidationHandler } from './token-validation/validation-handler'
+import { NullValidationHandler } from './token-validation/null-validation-handler'
+import { createDefaultLogger, createDefaultStorage } from './factories'
 import {
   HashHandler,
   DefaultHashHandler,
-} from './token-validation/hash-handler';
+} from './token-validation/hash-handler'
 
 @NgModule({
   imports: [CommonModule],
@@ -52,6 +52,6 @@ export class OAuthModule {
         },
         { provide: DateTimeProvider, useClass: SystemDateTimeProvider },
       ],
-    };
+    }
   }
 }

@@ -1,5 +1,5 @@
-import { Directive } from '@angular/core';
-import { NG_ASYNC_VALIDATORS, AbstractControl } from '@angular/forms';
+import { Directive } from '@angular/core'
+import { NG_ASYNC_VALIDATORS, AbstractControl } from '@angular/forms'
 
 @Directive({
   selector: 'input[async-city]',
@@ -16,12 +16,12 @@ export class AsyncCityValidatorDirective {
     return new Promise((resolve: Function) => {
       setTimeout(() => {
         if (ctrl.value == 'Graz' || ctrl.value == 'Hamburg') {
-          resolve({});
-          return;
+          resolve({})
+          return
         }
 
-        resolve({ 'async-city': false });
-      }, 100);
-    });
+        resolve({ 'async-city': false })
+      }, 100)
+    })
   }
 }

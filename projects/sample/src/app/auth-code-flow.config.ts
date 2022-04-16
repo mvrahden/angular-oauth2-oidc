@@ -1,5 +1,5 @@
-import { AuthConfig } from 'angular-oauth2-oidc';
-import { useSilentRefreshForCodeFlow } from '../flags';
+import { AuthConfig } from 'angular-oauth2-oidc'
+import { useSilentRefreshForCodeFlow } from '../flags'
 
 export const authCodeFlowConfig: AuthConfig = {
   issuer: 'https://idsvr4.azurewebsites.net',
@@ -50,4 +50,4 @@ export const authCodeFlowConfig: AuthConfig = {
   // disablePKCI: true,
 
   clearHashAfterLogin: true,
-};
+}

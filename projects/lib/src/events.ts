@@ -23,7 +23,7 @@ export type EventType =
   | 'logout'
   | 'popup_closed'
   | 'popup_blocked'
-  | 'token_revoke_error';
+  | 'token_revoke_error'
 
 export abstract class OAuthEvent {
   constructor(readonly type: EventType) {}
@@ -31,13 +31,13 @@ export abstract class OAuthEvent {
 
 export class OAuthSuccessEvent extends OAuthEvent {
   constructor(type: EventType, readonly info: any = null) {
-    super(type);
+    super(type)
   }
 }
 
 export class OAuthInfoEvent extends OAuthEvent {
   constructor(type: EventType, readonly info: any = null) {
-    super(type);
+    super(type)
   }
 }
 
@@ -47,6 +47,6 @@ export class OAuthErrorEvent extends OAuthEvent {
     readonly reason: object,
     readonly params: object = null
   ) {
-    super(type);
+    super(type)
   }
 }

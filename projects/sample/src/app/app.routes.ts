@@ -1,7 +1,7 @@
-import { PasswordFlowLoginComponent } from './password-flow-login/password-flow-login.component';
-import { Routes, RouterModule } from '@angular/router';
-import { HomeComponent } from './home/home.component';
-import { FlightHistoryComponent } from './flight-history/flight-history.component';
+import { PasswordFlowLoginComponent } from './password-flow-login/password-flow-login.component'
+import { Routes } from '@angular/router'
+import { HomeComponent } from './home/home.component'
+import { FlightHistoryComponent } from './flight-history/flight-history.component'
 
 export let APP_ROUTES: Routes = [
   {
@@ -33,4 +33,4 @@ export let APP_ROUTES: Routes = [
     path: '**',
     redirectTo: 'home',
   },
-];
+]

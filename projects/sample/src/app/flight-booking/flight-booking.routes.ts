@@ -1,10 +1,10 @@
-import { Routes, RouterModule } from '@angular/router';
-import { FlightSearchComponent } from './flight-search/flight-search.component';
-import { PassengerSearchComponent } from './passenger-search/passenger-search.component';
-import { FlightEditComponent } from './flight-edit/flight-edit.component';
-import { FlightBookingComponent } from './flight-booking.component';
-import { AuthGuard } from '../shared/auth/auth.guard';
-import { LeaveComponentGuard } from '../shared/deactivation/LeaveComponentGuard';
+import { Routes, RouterModule } from '@angular/router'
+import { FlightSearchComponent } from './flight-search/flight-search.component'
+import { PassengerSearchComponent } from './passenger-search/passenger-search.component'
+import { FlightEditComponent } from './flight-edit/flight-edit.component'
+import { FlightBookingComponent } from './flight-booking.component'
+import { AuthGuard } from '../shared/auth/auth.guard'
+import { LeaveComponentGuard } from '../shared/deactivation/LeaveComponentGuard'
 
 let FLIGHT_BOOKING_ROUTES: Routes = [
   {
@@ -27,8 +27,8 @@ let FLIGHT_BOOKING_ROUTES: Routes = [
       },
     ],
   },
-];
+]
 
 export let FlightBookingRouterModule = RouterModule.forChild(
   FLIGHT_BOOKING_ROUTES
-);
+)

@@ -1,5 +1,5 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
-import { Flight } from '../../entities/flight';
+import { Component, Input, Output, EventEmitter } from '@angular/core'
+import { Flight } from '../../entities/flight'
 @Component({
   selector: 'flight-list',
   template: `
@@ -16,11 +16,11 @@ import { Flight } from '../../entities/flight';
   `,
 })
 export class FlightListComponent {
-  @Input() flights: Flight[] = [];
-  @Input() selectedFlight: Flight;
-  @Output() selectedFlightChange = new EventEmitter();
+  @Input() flights: Flight[] = []
+  @Input() selectedFlight: Flight
+  @Output() selectedFlightChange = new EventEmitter()
 
   change(f: Flight) {
-    this.selectedFlightChange.emit(f);
+    this.selectedFlightChange.emit(f)
   }
 }

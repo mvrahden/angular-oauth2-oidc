@@ -1,4 +1,4 @@
-import { AuthConfig } from 'angular-oauth2-oidc';
+import { AuthConfig } from 'angular-oauth2-oidc'
 
 export const noDiscoveryAuthConfig: AuthConfig = {
   clientId:
@@ -66,4 +66,4 @@ export const noDiscoveryAuthConfig: AuthConfig = {
   sessionCheckIFrameName: 'angular-oauth-oidc-check-session-iframe',
   disableAtHashCheck: false,
   skipSubjectCheck: false,
-};
+}

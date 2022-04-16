@@ -1,1 +1,1 @@
-export * from './lib/jwks-validation-handler';
+export * from './lib/jwks-validation-handler'

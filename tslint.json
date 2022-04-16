@@ -9,7 +9,7 @@
     "deprecation": {
       "severity": "warn"
     },
-    "eofline": false,
+    "eofline": true,
     "forin": true,
     "import-blacklist": [true, "rxjs/Rx"],
     "import-spacing": true,
@@ -17,7 +17,7 @@
     "interface-over-type-literal": true,
     "label-position": true,
     "max-line-length": [true, 140],
-    "member-access": false,
+    "member-access": true,
     "member-ordering": [
       true,
       {
@@ -35,7 +35,7 @@
     "no-construct": true,
     "no-debugger": true,
     "no-duplicate-super": true,
-    "no-empty": false,
+    "no-empty": true,
     "no-empty-interface": true,
     "no-eval": true,
     "no-inferrable-types": [true, "ignore-params"],
@@ -57,10 +57,10 @@
       "check-else",
       "check-whitespace"
     ],
-    "prefer-const": false,
+    "prefer-const": true,
     "quotemark": [true, "single"],
     "radix": true,
-    "semicolon": [true, "always"],
+    "semicolon": [true, "never"],
     "triple-equals": [true, "allow-null-check"],
     "typedef-whitespace": [
       true,

@@ -1,13 +1,13 @@
-import { Component } from '@angular/core';
-import { Flight } from '../../entities/flight';
-import { FlightService } from '../services/flight.service';
+import { Component } from '@angular/core'
+import { Flight } from '../../entities/flight'
+import { FlightService } from '../services/flight.service'
 import {
   FormGroup,
   FormBuilder,
   Validators,
   AbstractControl,
-} from '@angular/forms';
-import { CityValidatorDirective } from '../../shared/validation/city.validator';
+} from '@angular/forms'
+import { CityValidatorDirective } from '../../shared/validation/city.validator'
 
 @Component({
   selector: 'flight-search-reactive',
@@ -16,23 +16,23 @@ import { CityValidatorDirective } from '../../shared/validation/city.validator';
   styleUrls: ['flight-search-reactive.component.css'],
 })
 export class FlightSearchReactiveComponent {
-  public flights: Array<Flight> = [];
-  public selectedFlight: Flight;
+  public flights: Array<Flight> = []
+  public selectedFlight: Flight
 
-  public filter: FormGroup;
+  public filter: FormGroup
 
-  public formDesc = [];
+  public formDesc = []
 
   constructor(private flightService: FlightService, private fb: FormBuilder) {
     this.formDesc.push({
       label: 'Von',
       name: 'from',
-    });
+    })
 
     this.formDesc.push({
       label: 'Nach',
       name: 'to',
-    });
+    })
 
     this.filter = fb.group({
       from: [
@@ -44,32 +44,32 @@ export class FlightSearchReactiveComponent {
             if (c.value != 'Graz' && c.value != 'Hamburg') {
               return {
                 city: true,
-              };
+              }
             }
-            return {};
+            return {}
           },
         ],
       ],
       to: ['Hamburg'],
-    });
+    })
 
     this.filter.valueChanges.subscribe((e) => {
-      console.debug('formular geändert', e);
-    });
+      console.debug('formular geändert', e)
+    })
 
     this.filter.controls['from'].valueChanges.subscribe((e) => {
-      console.debug('from geändert', e);
-    });
+      console.debug('from geändert', e)
+    })
   }
 
   public select(f: Flight): void {
-    this.selectedFlight = f;
+    this.selectedFlight = f
   }
 
   public search(): void {
-    var value = this.filter.value;
+    var value = this.filter.value
 
-    this.flightService.find(value.from, value.to);
+    this.flightService.find(value.from, value.to)
 
     // .map(function(resp) { return resp.json() })
   }
