@@ -1,3 +1,4 @@
+import { Observable, of } from 'rxjs';
 import { ValidationHandler, ValidationParams } from './validation-handler';
 
 /**
@@ -5,10 +6,11 @@ import { ValidationHandler, ValidationParams } from './validation-handler';
  * Can be used to skip validation (at your own risk).
  */
 export class NullValidationHandler implements ValidationHandler {
-  validateSignature(validationParams: ValidationParams): Promise<any> {
-    return Promise.resolve(null);
+
+  validateSignature(validationParams: ValidationParams): Observable<any> {
+    return of(null);
   }
-  validateAtHash(validationParams: ValidationParams): Promise<boolean> {
-    return Promise.resolve(true);
+  validateAtHash(validationParams: ValidationParams): Observable<boolean> {
+    return of(true);
   }
 }

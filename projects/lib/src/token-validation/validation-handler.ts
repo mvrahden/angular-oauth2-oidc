@@ -1,4 +1,6 @@
+import { Observable, of } from 'rxjs';
 import { base64UrlEncode } from '../base64-helper';
+import { HashHandler } from './hash-handler';
 
 export interface ValidationParams {
   idToken: string;
@@ -6,27 +8,23 @@ export interface ValidationParams {
   idTokenHeader: object;
   idTokenClaims: object;
   jwks: object;
-  loadKeys: () => Promise<object>;
+  loadKeys: () => Observable<object>;
 }
 
 /**
  * Interface for Handlers that are hooked in to
  * validate tokens.
  */
-export abstract class ValidationHandler {
+export interface ValidationHandler {
   /**
    * Validates the signature of an id_token.
    */
-  public abstract validateSignature(
-    validationParams: ValidationParams
-  ): Promise<any>;
+  validateSignature(validationParams: ValidationParams): Observable<boolean>;
 
   /**
    * Validates the at_hash in an id_token against the received access_token.
    */
-  public abstract validateAtHash(
-    validationParams: ValidationParams
-  ): Promise<boolean>;
+  validateAtHash(validationParams: ValidationParams): Observable<boolean>;
 }
 
 /**
@@ -34,19 +32,19 @@ export abstract class ValidationHandler {
  * the method validateAtHash. However, to make use of it,
  * you have to override the method calcHash.
  */
-export abstract class AbstractValidationHandler implements ValidationHandler {
+export abstract class AbstractValidationHandler implements ValidationHandler, HashHandler {
   /**
    * Validates the signature of an id_token.
    */
-  abstract validateSignature(validationParams: ValidationParams): Promise<any>;
+  abstract validateSignature(validationParams: ValidationParams): Observable<boolean>;
 
   /**
    * Validates the at_hash in an id_token against the received access_token.
    */
-  async validateAtHash(params: ValidationParams): Promise<boolean> {
+  public validateAtHash(params: ValidationParams): Observable<boolean> {
     let hashAlg = this.inferHashAlgorithm(params.idTokenHeader);
 
-    let tokenHash = await this.calcHash(params.accessToken, hashAlg); // sha256(accessToken, { asString: true });
+    let tokenHash = this.calcHash(params.accessToken, hashAlg); // sha256(accessToken, { asString: true });
 
     let leftMostHalf = tokenHash.substr(0, tokenHash.length / 2);
 
@@ -59,7 +57,7 @@ export abstract class AbstractValidationHandler implements ValidationHandler {
       console.error('actual at_hash: ' + claimsAtHash);
     }
 
-    return atHash === claimsAtHash;
+    return of(atHash === claimsAtHash);
   }
 
   /**
@@ -85,8 +83,9 @@ export abstract class AbstractValidationHandler implements ValidationHandler {
    * @param valueToHash
    * @param algorithm
    */
-  protected abstract calcHash(
-    valueToHash: string,
-    algorithm: string
-  ): Promise<string>;
+  protected abstract calcHash(valueToHash: string, algorithm: string): string;
+
+  public toSha256(valueToHash: string): string {
+    return this.calcHash(valueToHash, 'sha256')
+  }
 }

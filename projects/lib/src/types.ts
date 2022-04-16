@@ -4,28 +4,6 @@ import { Injectable } from '@angular/core';
  * Additional options that can be passed to tryLogin.
  */
 export class LoginOptions {
-  /**
-   * Is called, after a token has been received and
-   * successfully validated.
-   *
-   * Deprecated:  Use property ``events`` on OAuthService instead.
-   */
-  onTokenReceived?: (receivedTokens: ReceivedTokens) => void;
-
-  /**
-   * Hook, to validate the received tokens.
-   *
-   * Deprecated:  Use property ``tokenValidationHandler`` on OAuthService instead.
-   */
-  validationHandler?: (receivedTokens: ReceivedTokens) => Promise<any>;
-
-  /**
-   * Called when tryLogin detects that the auth server
-   * included an error message into the hash fragment.
-   *
-   * Deprecated:  Use property ``events`` on OAuthService instead.
-   */
-  onLoginError?: (params: object) => void;
 
   /**
    * A custom hash fragment to be used instead of the
