@@ -1,10 +1,10 @@
-import { Injectable, NgZone, Optional, OnDestroy, Inject } from '@angular/core';
+import { Injectable, NgZone, Optional, OnDestroy, Inject } from '@angular/core'
 import {
   HttpClient,
   HttpHeaders,
   HttpParams,
   HttpErrorResponse,
-} from '@angular/common/http';
+} from '@angular/common/http'
 import {
   Observable,
   Subject,
@@ -15,7 +15,7 @@ import {
   throwError,
   iif,
   defer,
-} from 'rxjs';
+} from 'rxjs'
 import {
   filter,
   delay,
@@ -27,21 +27,21 @@ import {
   finalize,
   mergeMap,
   takeWhile,
-} from 'rxjs/operators';
-import { DOCUMENT } from '@angular/common';
-import { DateTimeProvider } from './date-time-provider';
+} from 'rxjs/operators'
+import { DOCUMENT } from '@angular/common'
+import { DateTimeProvider } from './date-time-provider'
 
 import {
   ValidationHandler,
   ValidationParams,
-} from './token-validation/validation-handler';
-import { UrlHelperService } from './url-helper.service';
+} from './token-validation/validation-handler'
+import { UrlHelperService } from './url-helper.service'
 import {
   OAuthEvent,
   OAuthInfoEvent,
   OAuthErrorEvent,
   OAuthSuccessEvent,
-} from './events';
+} from './events'
 import {
   OAuthLogger,
   OAuthStorage,
@@ -50,12 +50,12 @@ import {
   OidcDiscoveryDoc,
   TokenResponse,
   UserInfo,
-} from './types';
-import { b64DecodeUnicode, base64UrlEncode } from './base64-helper';
-import { AuthConfig } from './auth.config';
-import { WebHttpUrlEncodingCodec } from './encoder';
-import { HashHandler } from './token-validation/hash-handler';
-import { EventType } from './events';
+} from './types'
+import { b64DecodeUnicode, base64UrlEncode } from './base64-helper'
+import { AuthConfig } from './auth.config'
+import { WebHttpUrlEncodingCodec } from './encoder'
+import { HashHandler } from './token-validation/hash-handler'
+import { EventType } from './events'
 
 /**
  * Service for logging in and logging out with
@@ -67,21 +67,21 @@ export class OAuthService implements OnDestroy {
   // Extending AuthConfig ist just for LEGACY reasons
   // to not break existing code.
 
-  protected eventsSubject: Subject<OAuthEvent> = new Subject<OAuthEvent>();
+  protected eventsSubject: Subject<OAuthEvent> = new Subject<OAuthEvent>()
   protected discoveryDocumentLoadedSubject: Subject<OidcDiscoveryDoc> =
-    new Subject<OidcDiscoveryDoc>();
-  protected silentRefreshPostMessageEventListener: EventListener;
-  protected grantTypesSupported: Array<string> = [];
-  protected _storage: OAuthStorage;
-  protected accessTokenTimeoutSubscription: Subscription;
-  protected idTokenTimeoutSubscription: Subscription;
-  protected tokenReceivedSubscription: Subscription;
-  protected automaticRefreshSubscription: Subscription;
-  protected sessionCheckEventListener: EventListener;
-  protected jwksUri: string;
-  protected sessionCheckTimer: any;
-  protected silentRefreshSubject: string;
-  protected inImplicitFlow = false;
+    new Subject<OidcDiscoveryDoc>()
+  protected silentRefreshPostMessageEventListener: EventListener
+  protected grantTypesSupported: Array<string> = []
+  protected _storage: OAuthStorage
+  protected accessTokenTimeoutSubscription: Subscription
+  protected idTokenTimeoutSubscription: Subscription
+  protected tokenReceivedSubscription: Subscription
+  protected automaticRefreshSubscription: Subscription
+  protected sessionCheckEventListener: EventListener
+  protected jwksUri: string
+  protected sessionCheckTimer: any
+  protected silentRefreshSubject: string
+  protected inImplicitFlow = false
 
   protected saveNoncesInLocalStorage = false
 
@@ -99,7 +99,7 @@ export class OAuthService implements OnDestroy {
   ) {
     this.debug('angular-oauth2-oidc v13')
 
-    this._events = this.eventsSubject.asObservable();
+    this._events = this.eventsSubject.asObservable()
 
     if (!!tokenValidationHandler) {
       this._tokenValidationHandler = tokenValidationHandler
@@ -107,31 +107,31 @@ export class OAuthService implements OnDestroy {
 
     if (config) {
       config = config ? config : {}
-      this.configure(config);
+      this.configure(config)
     }
 
     if (storage) {
-      this._setStorage(storage);
+      this._setStorage(storage)
     } else if (typeof sessionStorage !== 'undefined') {
-      this._setStorage(sessionStorage);
+      this._setStorage(sessionStorage)
     } else {
       console.error(
         'No OAuthStorage provided and cannot access default (sessionStorage).' +
         'Consider providing a custom OAuthStorage implementation in your module.'
-      );
+      )
     }
 
     // in IE, sessionStorage does not always survive a redirect
     if (this.checkLocalStorageAccessable()) {
-      const ua = window?.navigator?.userAgent;
-      const msie = ua?.includes('MSIE ') || ua?.includes('Trident');
+      const ua = window?.navigator?.userAgent
+      const msie = ua?.includes('MSIE ') || ua?.includes('Trident')
 
       if (msie) {
-        this.saveNoncesInLocalStorage = true;
+        this.saveNoncesInLocalStorage = true
       }
     }
 
-    this.setupRefreshTimer();
+    this.setupRefreshTimer()
   }
 
   private _config: AuthConfig = {}
@@ -164,17 +164,17 @@ export class OAuthService implements OnDestroy {
   }
 
   private checkLocalStorageAccessable() {
-    if (typeof window === 'undefined') return false;
+    if (typeof window === 'undefined') return false
 
-    const test = 'test';
+    const test = 'test'
     try {
-      if (typeof window['localStorage'] === 'undefined') return false;
+      if (typeof window['localStorage'] === 'undefined') return false
 
-      localStorage.setItem(test, test);
-      localStorage.removeItem(test);
-      return true;
+      localStorage.setItem(test, test)
+      localStorage.removeItem(test)
+      return true
     } catch (e) {
-      return false;
+      return false
     }
   }
 
@@ -190,35 +190,35 @@ export class OAuthService implements OnDestroy {
 
     if (!config.issuer) throw new Error('missing issuer in configuration')
 
-    this._config = Object.assign({} as AuthConfig, new AuthConfig(), config);
+    this._config = Object.assign({} as AuthConfig, new AuthConfig(), config)
 
     if (this.config.sessionChecksEnabled) {
-      this.setupSessionCheck();
+      this.setupSessionCheck()
     }
 
-    this.configChanged();
+    this.configChanged()
   }
 
   protected configChanged(): void {
-    this.setupRefreshTimer();
+    this.setupRefreshTimer()
   }
 
   public restartSessionChecksIfStillLoggedIn(): void {
     if (this.hasValidIdToken()) {
-      this.initSessionCheck();
+      this.initSessionCheck()
     }
   }
 
   protected restartRefreshTimerIfStillLoggedIn(): void {
-    this.setupExpirationTimers();
+    this.setupExpirationTimers()
   }
 
   protected setupSessionCheck(): void {
     this.events
       .pipe(filter((e) => e.type === 'token_received'))
       .subscribe((e) => {
-        this.initSessionCheck();
-      });
+        this.initSessionCheck()
+      })
   }
 
   /**
@@ -234,15 +234,15 @@ export class OAuthService implements OnDestroy {
     listenTo?: 'access_token' | 'id_token' | 'any',
     noPrompt = true
   ): void {
-    let shouldRunSilentRefresh = true;
-    this.clearAutomaticRefreshTimer();
+    let shouldRunSilentRefresh = true
+    this.clearAutomaticRefreshTimer()
     this.automaticRefreshSubscription = this.events
       .pipe(
         tap((e) => {
           if (e.type === 'token_received') {
-            shouldRunSilentRefresh = true;
+            shouldRunSilentRefresh = true
           } else if (e.type === 'logout') {
-            shouldRunSilentRefresh = false;
+            shouldRunSilentRefresh = false
           }
         }),
         filter(
@@ -257,18 +257,18 @@ export class OAuthService implements OnDestroy {
           // this.silentRefresh(params, noPrompt).catch(_ => {
           this.refreshInternal(params, noPrompt).subscribe({
             error: (err) => this.debug('Automatic silent refresh did not work', err)
-          });
+          })
         }
-      });
+      })
 
-    this.restartRefreshTimerIfStillLoggedIn();
+    this.restartRefreshTimerIfStillLoggedIn()
   }
 
   protected refreshInternal(params, noPrompt): Observable<TokenResponse | OAuthEvent> {
     if (!this.config.useSilentRefresh && this.config.responseType === 'code') {
       return this.refreshToken()
     }
-    return this.silentRefresh(params, noPrompt);
+    return this.silentRefresh(params, noPrompt)
   }
 
   /**
@@ -305,40 +305,40 @@ export class OAuthService implements OnDestroy {
 
   protected debug(...args): void {
     if (this.config.showDebugInformation) {
-      this.logger.debug.apply(this.logger, args);
+      this.logger.debug.apply(this.logger, args)
     }
   }
 
   protected validateUrlFromDiscoveryDocument(url: string): string[] {
-    const errors: string[] = [];
-    const httpsCheck = this.validateUrlForHttps(url);
-    const issuerCheck = this.validateUrlAgainstIssuer(url);
+    const errors: string[] = []
+    const httpsCheck = this.validateUrlForHttps(url)
+    const issuerCheck = this.validateUrlAgainstIssuer(url)
 
     if (!httpsCheck) {
       errors.push(
         'https for all urls required. Also for urls received by discovery.'
-      );
+      )
     }
 
     if (!issuerCheck) {
       errors.push(
         'Every url in discovery document has to start with the issuer url.' +
         'Also see property strictDiscoveryDocumentValidation.'
-      );
+      )
     }
 
-    return errors;
+    return errors
   }
 
   protected validateUrlForHttps(url: string): boolean {
     if (!url) {
-      return true;
+      return true
     }
 
-    const lcUrl = url.toLowerCase();
+    const lcUrl = url.toLowerCase()
 
     if (this.config.requireHttps === false) {
-      return true;
+      return true
     }
 
     if (
@@ -346,10 +346,10 @@ export class OAuthService implements OnDestroy {
         lcUrl.match(/^http:\/\/localhost($|[:\/])/)) &&
       this.config.requireHttps === 'remoteOnly'
     ) {
-      return true;
+      return true
     }
 
-    return lcUrl.startsWith('https://');
+    return lcUrl.startsWith('https://')
   }
 
   protected assertUrlNotNullAndCorrectProtocol(
@@ -357,63 +357,63 @@ export class OAuthService implements OnDestroy {
     description: string
   ) {
     if (!url) {
-      throw new Error(`'${description}' should not be null`);
+      throw new Error(`'${description}' should not be null`)
     }
     if (!this.validateUrlForHttps(url)) {
       throw new Error(
         `'${description}' must use HTTPS (with TLS), or config value for property 'requireHttps' must be set to 'false' and allow HTTP (without TLS).`
-      );
+      )
     }
   }
 
   protected validateUrlAgainstIssuer(url: string) {
     if (!this.config.strictDiscoveryDocumentValidation) {
-      return true;
+      return true
     }
     if (!url) {
-      return true;
+      return true
     }
-    return url.toLowerCase().startsWith(this.config.issuer.toLowerCase());
+    return url.toLowerCase().startsWith(this.config.issuer.toLowerCase())
   }
 
   protected setupRefreshTimer(): void {
     if (typeof window === 'undefined') {
-      this.debug('timer not supported on this plattform');
-      return;
+      this.debug('timer not supported on this plattform')
+      return
     }
 
     if (this.hasValidIdToken() || this.hasValidAccessToken()) {
-      this.clearAccessTokenTimer();
-      this.clearIdTokenTimer();
-      this.setupExpirationTimers();
+      this.clearAccessTokenTimer()
+      this.clearIdTokenTimer()
+      this.setupExpirationTimers()
     }
 
     if (this.tokenReceivedSubscription)
-      this.tokenReceivedSubscription.unsubscribe();
+      this.tokenReceivedSubscription.unsubscribe()
 
     this.tokenReceivedSubscription = this.events
       .pipe(filter((e) => e.type === 'token_received'))
       .subscribe((_) => {
-        this.clearAccessTokenTimer();
-        this.clearIdTokenTimer();
-        this.setupExpirationTimers();
-      });
+        this.clearAccessTokenTimer()
+        this.clearIdTokenTimer()
+        this.setupExpirationTimers()
+      })
   }
 
   protected setupExpirationTimers(): void {
     if (this.hasValidAccessToken()) {
-      this.setupAccessTokenTimer();
+      this.setupAccessTokenTimer()
     }
 
     if (this.hasValidIdToken()) {
-      this.setupIdTokenTimer();
+      this.setupIdTokenTimer()
     }
   }
 
   protected setupAccessTokenTimer(): void {
-    const expiration = this.getAccessTokenExpiration();
-    const storedAt = this.getAccessTokenStoredAt();
-    const timeout = this.calcTimeout(storedAt, expiration);
+    const expiration = this.getAccessTokenExpiration()
+    const storedAt = this.getAccessTokenStoredAt()
+    const timeout = this.calcTimeout(storedAt, expiration)
 
     this.ngZone.runOutsideAngular(() => {
       this.accessTokenTimeoutSubscription = of(
@@ -424,16 +424,16 @@ export class OAuthService implements OnDestroy {
         )
         .subscribe((e) => {
           this.ngZone.run(() => {
-            this.eventsSubject.next(e);
-          });
-        });
-    });
+            this.eventsSubject.next(e)
+          })
+        })
+    })
   }
 
   protected setupIdTokenTimer(): void {
-    const expiration = this.getIdTokenExpiration();
-    const storedAt = this.getIdTokenStoredAt();
-    const timeout = this.calcTimeout(storedAt, expiration);
+    const expiration = this.getIdTokenExpiration()
+    const storedAt = this.getIdTokenStoredAt()
+    const timeout = this.calcTimeout(storedAt, expiration)
 
     this.ngZone.runOutsideAngular(() => {
       this.idTokenTimeoutSubscription = of(
@@ -442,10 +442,10 @@ export class OAuthService implements OnDestroy {
         .pipe(delay(timeout))
         .subscribe((e) => {
           this.ngZone.run(() => {
-            this.eventsSubject.next(e);
-          });
-        });
-    });
+            this.eventsSubject.next(e)
+          })
+        })
+    })
   }
 
   /**
@@ -453,39 +453,39 @@ export class OAuthService implements OnDestroy {
    * To restart it, call setupAutomaticSilentRefresh again.
    */
   public stopAutomaticRefresh() {
-    this.clearAccessTokenTimer();
-    this.clearIdTokenTimer();
-    this.clearAutomaticRefreshTimer();
+    this.clearAccessTokenTimer()
+    this.clearIdTokenTimer()
+    this.clearAutomaticRefreshTimer()
   }
 
   protected clearAccessTokenTimer(): void {
     if (this.accessTokenTimeoutSubscription) {
-      this.accessTokenTimeoutSubscription.unsubscribe();
+      this.accessTokenTimeoutSubscription.unsubscribe()
     }
   }
 
   protected clearIdTokenTimer(): void {
     if (this.idTokenTimeoutSubscription) {
-      this.idTokenTimeoutSubscription.unsubscribe();
+      this.idTokenTimeoutSubscription.unsubscribe()
     }
   }
 
   protected clearAutomaticRefreshTimer(): void {
     if (this.automaticRefreshSubscription) {
-      this.automaticRefreshSubscription.unsubscribe();
+      this.automaticRefreshSubscription.unsubscribe()
     }
   }
 
   protected calcTimeout(storedAt: number, expiration: number): number {
-    const now = this.dateTimeService.now();
+    const now = this.dateTimeService.now()
     const delta =
-      (expiration - storedAt) * this.config.timeoutFactor - (now - storedAt);
-    return Math.max(0, delta);
+      (expiration - storedAt) * this.config.timeoutFactor - (now - storedAt)
+    return Math.max(0, delta)
   }
 
   private _setStorage(storage: OAuthStorage): void {
-    this._storage = storage;
-    this.configChanged();
+    this._storage = storage
+    this.configChanged()
   }
 
   /**
@@ -499,17 +499,17 @@ export class OAuthService implements OnDestroy {
    */
   public loadDiscoveryDocument(fullUrl: string = null): Observable<OidcDiscoveryDoc> {
     if (!fullUrl) {
-      fullUrl = this.config.issuer || '';
+      fullUrl = this.config.issuer || ''
       if (!fullUrl.endsWith('/')) {
-        fullUrl += '/';
+        fullUrl += '/'
       }
-      fullUrl += '.well-known/openid-configuration';
+      fullUrl += '.well-known/openid-configuration'
     }
 
     if (!this.validateUrlForHttps(fullUrl)) {
       return throwError(
         "issuer  must use HTTPS (with TLS), or config value for property 'requireHttps' must be set to 'false' and allow HTTP (without TLS)."
-      );
+      )
     }
 
     return of(fullUrl).pipe(
@@ -518,27 +518,27 @@ export class OAuthService implements OnDestroy {
         if (!this.validateDiscoveryDocument(doc)) {
           this.eventsSubject.next(
             new OAuthErrorEvent('discovery_document_validation_error', null)
-          );
-          return throwError('discovery_document_validation_error');
+          )
+          return throwError('discovery_document_validation_error')
         }
 
-        this.config.loginUrl = doc.authorization_endpoint;
-        this.config.logoutUrl = doc.end_session_endpoint || this.config.logoutUrl;
-        this.grantTypesSupported = doc.grant_types_supported;
-        this.config.issuer = doc.issuer;
-        this.config.tokenEndpoint = doc.token_endpoint;
+        this.config.loginUrl = doc.authorization_endpoint
+        this.config.logoutUrl = doc.end_session_endpoint || this.config.logoutUrl
+        this.grantTypesSupported = doc.grant_types_supported
+        this.config.issuer = doc.issuer
+        this.config.tokenEndpoint = doc.token_endpoint
         this.config.userinfoEndpoint =
-          doc.userinfo_endpoint || this.config.userinfoEndpoint;
-        this.jwksUri = doc.jwks_uri;
+          doc.userinfo_endpoint || this.config.userinfoEndpoint
+        this.jwksUri = doc.jwks_uri
         this.config.sessionCheckIFrameUrl =
-          doc.check_session_iframe || this.config.sessionCheckIFrameUrl;
+          doc.check_session_iframe || this.config.sessionCheckIFrameUrl
 
-        this.discoveryDocumentLoadedSubject.next(doc);
+        this.discoveryDocumentLoadedSubject.next(doc)
         this.config.revocationEndpoint =
-          doc.revocation_endpoint || this.config.revocationEndpoint;
+          doc.revocation_endpoint || this.config.revocationEndpoint
 
         if (this.config.sessionChecksEnabled) {
-          this.restartSessionChecksIfStillLoggedIn();
+          this.restartSessionChecksIfStillLoggedIn()
         }
 
         return this.loadJwks<object>().pipe(
@@ -546,22 +546,22 @@ export class OAuthService implements OnDestroy {
             const result = {
               discoveryDocument: doc,
               jwks: jwks,
-            };
+            }
 
             const event = new OAuthSuccessEvent(
               'discovery_document_loaded',
               result
-            );
-            this.eventsSubject.next(event);
+            )
+            this.eventsSubject.next(event)
             return doc
           }),
         )
       }),
       catchError((err) => {
-        this.logger.error('error loading discovery document', err);
+        this.logger.error('error loading discovery document', err)
         this.eventsSubject.next(
           new OAuthErrorEvent('discovery_document_load_error', err)
-        );
+        )
         return throwError(err)
       })
     )
@@ -578,7 +578,7 @@ export class OAuthService implements OnDestroy {
           )
         }),
         catchError(err => {
-          this.logger.error('error loading jwks', err);
+          this.logger.error('error loading jwks', err)
           this.eventsSubject.next(
             new OAuthErrorEvent('jwks_load_error', err)
           )
@@ -589,77 +589,77 @@ export class OAuthService implements OnDestroy {
   }
 
   protected validateDiscoveryDocument(doc: OidcDiscoveryDoc): boolean {
-    let errors: string[];
+    let errors: string[]
 
     if (!this.config.skipIssuerCheck && doc.issuer !== this.config.issuer) {
       this.logger.error(
         'invalid issuer in discovery document',
         'expected: ' + this.config.issuer,
         'current: ' + doc.issuer
-      );
-      return false;
+      )
+      return false
     }
 
-    errors = this.validateUrlFromDiscoveryDocument(doc.authorization_endpoint);
+    errors = this.validateUrlFromDiscoveryDocument(doc.authorization_endpoint)
     if (errors.length > 0) {
       this.logger.error(
         'error validating authorization_endpoint in discovery document',
         errors
-      );
-      return false;
+      )
+      return false
     }
 
-    errors = this.validateUrlFromDiscoveryDocument(doc.end_session_endpoint);
+    errors = this.validateUrlFromDiscoveryDocument(doc.end_session_endpoint)
     if (errors.length > 0) {
       this.logger.error(
         'error validating end_session_endpoint in discovery document',
         errors
-      );
-      return false;
+      )
+      return false
     }
 
-    errors = this.validateUrlFromDiscoveryDocument(doc.token_endpoint);
+    errors = this.validateUrlFromDiscoveryDocument(doc.token_endpoint)
     if (errors.length > 0) {
       this.logger.error(
         'error validating token_endpoint in discovery document',
         errors
-      );
+      )
     }
 
-    errors = this.validateUrlFromDiscoveryDocument(doc.revocation_endpoint);
+    errors = this.validateUrlFromDiscoveryDocument(doc.revocation_endpoint)
     if (errors.length > 0) {
       this.logger.error(
         'error validating revocation_endpoint in discovery document',
         errors
-      );
+      )
     }
 
-    errors = this.validateUrlFromDiscoveryDocument(doc.userinfo_endpoint);
+    errors = this.validateUrlFromDiscoveryDocument(doc.userinfo_endpoint)
     if (errors.length > 0) {
       this.logger.error(
         'error validating userinfo_endpoint in discovery document',
         errors
-      );
-      return false;
+      )
+      return false
     }
 
-    errors = this.validateUrlFromDiscoveryDocument(doc.jwks_uri);
+    errors = this.validateUrlFromDiscoveryDocument(doc.jwks_uri)
     if (errors.length > 0) {
       this.logger.error(
         'error validating jwks_uri in discovery document',
         errors
-      );
-      return false;
+      )
+      return false
     }
 
     if (this.config.sessionChecksEnabled && !doc.check_session_iframe) {
       this.logger.warn(
         'sessionChecksEnabled is activated but discovery document' +
         ' does not contain a check_session_iframe field'
-      );
+      )
     }
 
-    return true;
+    return true
   }
 
   /**
@@ -700,7 +700,7 @@ export class OAuthService implements OnDestroy {
    */
   public loadUserProfile(): Observable<UserInfo> {
     if (!this.hasValidAccessToken()) {
-      return throwError('Can not load User Profile without access_token');
+      return throwError('Can not load User Profile without access_token')
     }
     if (!this.validateUrlForHttps(this.config.userinfoEndpoint)) {
       return throwError(
@@ -716,23 +716,23 @@ export class OAuthService implements OnDestroy {
       map(resp => {
         let userinfo = undefined
         if (resp.headers.get('content-type').startsWith('application/json')) {
-          const existingClaims = this.getIdentityClaims() || {};
+          const existingClaims = this.getIdentityClaims() || {}
           if (!this.config.skipSubjectCheck) {
             if (this.config.oidc && (!existingClaims['sub'] || resp.body.sub !== existingClaims['sub'])
             ) {
               const err =
                 'if property oidc is true, the received user-id (sub) has to be the user-id ' +
                 'of the user that has logged in with oidc.\n' +
-                'if you are not using oidc but just oauth2 password flow set oidc to false';
+                'if you are not using oidc but just oauth2 password flow set oidc to false'
 
               return throwError(err)
             }
           }
           userinfo = { ...existingClaims, ...resp.body }
         } else {
-          this.debug('userinfo is not JSON, treating it as JWE/JWS');
+          this.debug('userinfo is not JSON, treating it as JWE/JWS')
           userinfo = !!resp.body ? JSON.parse(resp.body as any) : undefined
-          this.eventsSubject.next(new OAuthSuccessEvent('user_profile_loaded'));
+          this.eventsSubject.next(new OAuthSuccessEvent('user_profile_loaded'))
         }
         if (!!userinfo) this.saveUserinfo(userinfo)
         this.eventsSubject.next(new OAuthSuccessEvent('user_profile_loaded'))
@@ -763,8 +763,8 @@ export class OAuthService implements OnDestroy {
     const parameters = {
       username: userName,
       password: password,
-    };
-    return this.fetchTokenUsingGrant('password', parameters, headers);
+    }
+    return this.fetchTokenUsingGrant('password', parameters, headers)
   }
 
   /**
@@ -788,12 +788,12 @@ export class OAuthService implements OnDestroy {
       })),
       map(opts => {
         if (this.config.useHttpBasicAuth) {
-          opts.headers = opts.headers.set('Authorization', `Basic ${this.createBasicAuthDummyValue()}`);
+          opts.headers = opts.headers.set('Authorization', `Basic ${this.createBasicAuthDummyValue()}`)
         } else {
           opts.params = opts.params.set('client_id', this.config.clientId)
           if (!!this.config.dummyClientSecret) opts.params = opts.params.set('client_secret', this.config.dummyClientSecret)
         }
-        return opts;
+        return opts
       }),
       map(opts => {
         if (this.config.customQueryParams) {
@@ -806,7 +806,7 @@ export class OAuthService implements OnDestroy {
       map(opts => {
         // set explicit parameters last, to allow overwriting
         for (const key of Object.keys(parameters)) {
-          opts.params = opts.params.set(key, parameters[key]);
+          opts.params = opts.params.set(key, parameters[key])
         }
         return opts
       }),
@@ -821,7 +821,7 @@ export class OAuthService implements OnDestroy {
           this.config.fallbackAccessTokenExpirationTimeInSec,
           tokenResponse.scope,
           this.extractRecognizedCustomParameters(tokenResponse)
-        );
+        )
         if (this.config.oidc && tokenResponse.id_token) {
           this.processIdToken(
             tokenResponse.id_token,
@@ -833,7 +833,7 @@ export class OAuthService implements OnDestroy {
             })
           ).subscribe(() => { })
         }
-        this.eventsSubject.next(new OAuthSuccessEvent('token_received'));
+        this.eventsSubject.next(new OAuthSuccessEvent('token_received'))
         return tokenResponse
       }),
       catchError(err => {
@@ -846,7 +846,7 @@ export class OAuthService implements OnDestroy {
   }
 
   private createBasicAuthDummyValue(): string {
-    return Buffer.from(`${this.config.clientId}:${this.config.dummyClientSecret}`, 'utf8').toString('base64');
+    return Buffer.from(`${this.config.clientId}:${this.config.dummyClientSecret}`, 'utf8').toString('base64')
   }
 
   /**
@@ -872,12 +872,12 @@ export class OAuthService implements OnDestroy {
       })),
       map(opts => {
         if (this.config.useHttpBasicAuth) {
-          opts.headers = opts.headers.set('Authorization', `Basic ${this.createBasicAuthDummyValue()}`);
+          opts.headers = opts.headers.set('Authorization', `Basic ${this.createBasicAuthDummyValue()}`)
         } else {
           opts.params = opts.params.set('client_id', this.config.clientId)
           if (!!this.config.dummyClientSecret) opts.params = opts.params.set('client_secret', this.config.dummyClientSecret)
         }
-        return opts;
+        return opts
       }),
       map(opts => {
         if (this.config.customQueryParams) {
@@ -954,60 +954,60 @@ export class OAuthService implements OnDestroy {
     params: object = {},
     noPrompt = true
   ): Observable<OAuthEvent> {
-    const claims: object = this.getIdentityClaims() || {};
+    const claims: object = this.getIdentityClaims() || {}
 
     if (this.config.useIdTokenHintForSilentRefresh && this.hasValidIdToken()) {
-      params['id_token_hint'] = this.getIdToken();
+      params['id_token_hint'] = this.getIdToken()
     }
 
     if (!this.validateUrlForHttps(this.config.loginUrl)) {
       return throwError(
         "loginUrl must use HTTPS (with TLS), or config value for property 'requireHttps' must be set to 'false' and allow HTTP (without TLS)."
-      );
+      )
     }
 
     if (typeof this.document === 'undefined') {
-      return throwError('silent refresh is not supported on this platform');
+      return throwError('silent refresh is not supported on this platform')
     }
 
     const existingIframe = this.document.getElementById(
       this.config.silentRefreshIFrameName
-    );
+    )
 
     if (existingIframe) {
-      this.document.body.removeChild(existingIframe);
+      this.document.body.removeChild(existingIframe)
     }
 
-    this.silentRefreshSubject = claims['sub'];
+    this.silentRefreshSubject = claims['sub']
 
-    const iframe = this.document.createElement('iframe');
-    iframe.id = this.config.silentRefreshIFrameName;
+    const iframe = this.document.createElement('iframe')
+    iframe.id = this.config.silentRefreshIFrameName
 
-    this.setupSilentRefreshEventListener();
+    this.setupSilentRefreshEventListener()
 
-    const redirectUri = this.config.silentRefreshRedirectUri || this.config.redirectUri;
+    const redirectUri = this.config.silentRefreshRedirectUri || this.config.redirectUri
 
     return of({}).pipe(
       mergeMap(() => this.createLoginUrl(null, null, redirectUri, noPrompt, params)),
       tap(url => iframe.setAttribute('src', url)),
       map(() => {
         if (!this.config.silentRefreshShowIFrame) {
-          iframe.style['display'] = 'none';
+          iframe.style['display'] = 'none'
         }
-        this.document.body.appendChild(iframe);
+        this.document.body.appendChild(iframe)
       }),
       mergeMap(() => {
         const errors = this.events.pipe(
           filter((e) => e instanceof OAuthErrorEvent),
           first()
-        );
+        )
         const success = this.events.pipe(
           filter((e) => e.type === 'token_received'),
           first()
-        );
+        )
         const timeout = of(
           new OAuthErrorEvent('silent_refresh_timeout', null)
-        ).pipe(delay(this.config.silentRefreshTimeout));
+        ).pipe(delay(this.config.silentRefreshTimeout))
 
         return race([errors, success, timeout])
       }),
@@ -1034,9 +1034,9 @@ export class OAuthService implements OnDestroy {
    * and implicit flows.
    */
   public initLoginFlowInPopup(options?: {
-    height?: number;
-    width?: number;
-    windowRef?: Window;
+    height?: number
+    width?: number
+    windowRef?: Window
   }): Observable<boolean> {
     options = options || {}
     return of({}).pipe(
@@ -1120,70 +1120,70 @@ export class OAuthService implements OnDestroy {
   }
 
   protected calculatePopupFeatures(options: {
-    height?: number;
-    width?: number;
+    height?: number
+    width?: number
   }): string {
     // Specify an static height and width and calculate centered position
 
-    const height = options.height || 470;
-    const width = options.width || 500;
-    const left = window.screenLeft + (window.outerWidth - width) / 2;
-    const top = window.screenTop + (window.outerHeight - height) / 2;
-    return `location=no,toolbar=no,width=${width},height=${height},top=${top},left=${left}`;
+    const height = options.height || 470
+    const width = options.width || 500
+    const left = window.screenLeft + (window.outerWidth - width) / 2
+    const top = window.screenTop + (window.outerHeight - height) / 2
+    return `location=no,toolbar=no,width=${width},height=${height},top=${top},left=${left}`
   }
 
   protected processMessageEventMessage(e: MessageEvent): string {
-    let expectedPrefix = '#';
+    let expectedPrefix = '#'
 
     if (this.config.silentRefreshMessagePrefix) {
-      expectedPrefix += this.config.silentRefreshMessagePrefix;
+      expectedPrefix += this.config.silentRefreshMessagePrefix
     }
 
     if (!e || !e.data || typeof e.data !== 'string') {
-      return;
+      return
     }
 
-    const prefixedMessage: string = e.data;
+    const prefixedMessage: string = e.data
 
     if (!prefixedMessage.startsWith(expectedPrefix)) {
-      return;
+      return
     }
 
-    return '#' + prefixedMessage.substr(expectedPrefix.length);
+    return '#' + prefixedMessage.substr(expectedPrefix.length)
   }
 
   protected canPerformSessionCheck(): boolean {
     if (!this.config.sessionChecksEnabled) {
-      return false;
+      return false
     }
     if (!this.config.sessionCheckIFrameUrl) {
       console.warn(
         'sessionChecksEnabled is activated but there is no sessionCheckIFrameUrl'
-      );
-      return false;
+      )
+      return false
     }
-    const sessionState = this.getSessionState();
+    const sessionState = this.getSessionState()
     if (!sessionState) {
       console.warn(
         'sessionChecksEnabled is activated but there is no session_state'
-      );
-      return false;
+      )
+      return false
     }
     if (typeof this.document === 'undefined') {
-      return false;
+      return false
     }
 
-    return true;
+    return true
   }
 
   protected setupSessionCheckEventListener(): void {
-    this.removeSessionCheckEventListener();
+    this.removeSessionCheckEventListener()
 
     this.sessionCheckEventListener = (e: MessageEvent) => {
-      const origin = e.origin.toLowerCase();
-      const issuer = this.config.issuer.toLowerCase();
+      const origin = e.origin.toLowerCase()
+      const issuer = this.config.issuer.toLowerCase()
 
-      this.debug('sessionCheckEventListener');
+      this.debug('sessionCheckEventListener')
 
       if (!issuer.startsWith(origin)) {
         this.debug(
@@ -1194,65 +1194,65 @@ export class OAuthService implements OnDestroy {
           issuer,
           'event',
           e
-        );
+        )
 
-        return;
+        return
       }
 
       // only run in Angular zone if it is 'changed' or 'error'
       switch (e.data) {
         case 'unchanged':
           this.ngZone.run(() => {
-            this.handleSessionUnchanged();
-          });
-          break;
+            this.handleSessionUnchanged()
+          })
+          break
         case 'changed':
           this.ngZone.run(() => {
-            this.handleSessionChange();
-          });
-          break;
+            this.handleSessionChange()
+          })
+          break
         case 'error':
           this.ngZone.run(() => {
-            this.handleSessionError();
-          });
-          break;
+            this.handleSessionError()
+          })
+          break
       }
 
-      this.debug('got info from session check inframe', e);
-    };
+      this.debug('got info from session check inframe', e)
+    }
 
     // prevent Angular from refreshing the view on every message (runs in intervals)
     this.ngZone.runOutsideAngular(() => {
-      window.addEventListener('message', this.sessionCheckEventListener);
-    });
+      window.addEventListener('message', this.sessionCheckEventListener)
+    })
   }
 
   protected handleSessionUnchanged(): void {
-    this.debug('session check', 'session unchanged');
-    this.eventsSubject.next(new OAuthInfoEvent('session_unchanged'));
+    this.debug('session check', 'session unchanged')
+    this.eventsSubject.next(new OAuthInfoEvent('session_unchanged'))
   }
 
   protected handleSessionChange(): void {
-    this.eventsSubject.next(new OAuthInfoEvent('session_changed'));
-    this.stopSessionCheckTimer();
+    this.eventsSubject.next(new OAuthInfoEvent('session_changed'))
+    this.stopSessionCheckTimer()
 
     if (!this.config.useSilentRefresh && this.config.responseType === 'code') {
       this.refreshToken().subscribe({
         next: () => this.debug('token refresh after session change worked'),
         error: () => {
           this.debug('token refresh did not work after session changed')
-          this.eventsSubject.next(new OAuthInfoEvent('session_terminated'));
-          this.logOut(true);
+          this.eventsSubject.next(new OAuthInfoEvent('session_terminated'))
+          this.logOut(true)
         },
       })
     } else if (this.config.silentRefreshRedirectUri) {
       this.silentRefresh().subscribe({
         error: (err) => this.debug('silent refresh failed after session changed', err)
-      });
-      this.waitForSilentRefreshAfterSessionChange();
+      })
+      this.waitForSilentRefreshAfterSessionChange()
     } else {
-      this.eventsSubject.next(new OAuthInfoEvent('session_terminated'));
-      this.logOut(true);
+      this.eventsSubject.next(new OAuthInfoEvent('session_terminated'))
+      this.logOut(true)
     }
   }
 
@@ -1269,87 +1269,87 @@ export class OAuthService implements OnDestroy {
       )
       .subscribe((e) => {
         if (e.type !== 'silently_refreshed') {
-          this.debug('silent refresh did not work after session changed');
-          this.eventsSubject.next(new OAuthInfoEvent('session_terminated'));
-          this.logOut(true);
+          this.debug('silent refresh did not work after session changed')
+          this.eventsSubject.next(new OAuthInfoEvent('session_terminated'))
+          this.logOut(true)
         }
-      });
+      })
   }
 
   protected handleSessionError(): void {
-    this.stopSessionCheckTimer();
-    this.eventsSubject.next(new OAuthInfoEvent('session_error'));
+    this.stopSessionCheckTimer()
+    this.eventsSubject.next(new OAuthInfoEvent('session_error'))
   }
 
   protected removeSessionCheckEventListener(): void {
     if (this.sessionCheckEventListener) {
-      window.removeEventListener('message', this.sessionCheckEventListener);
-      this.sessionCheckEventListener = null;
+      window.removeEventListener('message', this.sessionCheckEventListener)
+      this.sessionCheckEventListener = null
     }
   }
 
   protected initSessionCheck(): void {
     if (!this.canPerformSessionCheck()) {
-      return;
+      return
     }
 
     const existingIframe = this.document.getElementById(
       this.config.sessionCheckIFrameName
-    );
+    )
     if (existingIframe) {
-      this.document.body.removeChild(existingIframe);
+      this.document.body.removeChild(existingIframe)
     }
 
-    const iframe = this.document.createElement('iframe');
-    iframe.id = this.config.sessionCheckIFrameName;
+    const iframe = this.document.createElement('iframe')
+    iframe.id = this.config.sessionCheckIFrameName
 
-    this.setupSessionCheckEventListener();
+    this.setupSessionCheckEventListener()
 
-    const url = this.config.sessionCheckIFrameUrl;
-    iframe.setAttribute('src', url);
-    iframe.style.display = 'none';
-    this.document.body.appendChild(iframe);
+    const url = this.config.sessionCheckIFrameUrl
+    iframe.setAttribute('src', url)
+    iframe.style.display = 'none'
+    this.document.body.appendChild(iframe)
 
-    this.startSessionCheckTimer();
+    this.startSessionCheckTimer()
   }
 
   protected startSessionCheckTimer(): void {
-    this.stopSessionCheckTimer();
+    this.stopSessionCheckTimer()
     this.ngZone.runOutsideAngular(() => {
       this.sessionCheckTimer = setInterval(
         this.checkSession.bind(this),
         this.config.sessionCheckIntervall
-      );
-    });
+      )
+    })
   }
 
   protected stopSessionCheckTimer(): void {
     if (this.sessionCheckTimer) {
-      clearInterval(this.sessionCheckTimer);
-      this.sessionCheckTimer = null;
+      clearInterval(this.sessionCheckTimer)
+      this.sessionCheckTimer = null
     }
   }
 
   public checkSession(): void {
     const iframe: any = this.document.getElementById(
       this.config.sessionCheckIFrameName
-    );
+    )
 
     if (!iframe) {
       this.logger.warn(
         'checkSession did not find iframe',
         this.config.sessionCheckIFrameName
-      );
+      )
     }
 
-    const sessionState = this.getSessionState();
+    const sessionState = this.getSessionState()
 
     if (!sessionState) {
-      this.stopSessionCheckTimer();
+      this.stopSessionCheckTimer()
     }
 
-    const message = this.config.clientId + ' ' + sessionState;
-    iframe.contentWindow.postMessage(message, this.config.issuer);
+    const message = this.config.clientId + ' ' + sessionState
+    iframe.contentWindow.postMessage(message, this.config.issuer)
   }
 
   protected createLoginUrl(
@@ -1359,45 +1359,45 @@ export class OAuthService implements OnDestroy {
     noPrompt = false,
     params: object = {}
   ): Observable<string> {
-    let redirectUri: string;
+    let redirectUri: string
 
     if (customRedirectUri) {
-      redirectUri = customRedirectUri;
+      redirectUri = customRedirectUri
     } else {
-      redirectUri = this.config.redirectUri;
+      redirectUri = this.config.redirectUri
     }
 
-    const nonce = this.createAndSaveNonce();
+    const nonce = this.createAndSaveNonce()
 
     if (state) {
       state =
-        nonce + this.config.nonceStateSeparator + encodeURIComponent(state);
+        nonce + this.config.nonceStateSeparator + encodeURIComponent(state)
     } else {
-      state = nonce;
+      state = nonce
     }
 
     if (!this.config.requestAccessToken && !this.config.oidc) {
-      return throwError('Either requestAccessToken or oidc or both must be true');
+      return throwError('Either requestAccessToken or oidc or both must be true')
     }
 
     if (this.config.responseType) {
-      this.config.responseType = this.config.responseType;
+      this.config.responseType = this.config.responseType
     } else {
       if (this.config.oidc && this.config.requestAccessToken) {
-        this.config.responseType = 'id_token token';
+        this.config.responseType = 'id_token token'
       } else if (this.config.oidc && !this.config.requestAccessToken) {
-        this.config.responseType = 'id_token';
+        this.config.responseType = 'id_token'
       } else {
-        this.config.responseType = 'token';
+        this.config.responseType = 'token'
       }
     }
 
-    const seperationChar = this.config.loginUrl.indexOf('?') > -1 ? '&' : '?';
+    const seperationChar = this.config.loginUrl.indexOf('?') > -1 ? '&' : '?'
 
-    let scope = this.config.scope;
+    let scope = this.config.scope
 
     if (this.config.oidc && !scope.match(/(^|\s)openid($|\s)/)) {
-      scope = 'openid ' + scope;
+      scope = 'openid ' + scope
     }
 
     let url =
@@ -1412,49 +1412,49 @@ export class OAuthService implements OnDestroy {
       '&redirect_uri=' +
       encodeURIComponent(redirectUri) +
       '&scope=' +
-      encodeURIComponent(scope);
+      encodeURIComponent(scope)
 
     if (this.config.responseType.includes('code') && !this.config.disablePKCE) {
-      const [challenge, verifier] = this.createChallangeVerifierPairForPKCE();
+      const [challenge, verifier] = this.createChallangeVerifierPairForPKCE()
 
       if (
         this.saveNoncesInLocalStorage &&
         typeof window['localStorage'] !== 'undefined'
       ) {
-        localStorage.setItem('PKCE_verifier', verifier);
+        localStorage.setItem('PKCE_verifier', verifier)
       } else {
-        this._storage.setItem('PKCE_verifier', verifier);
+        this._storage.setItem('PKCE_verifier', verifier)
       }
 
-      url += '&code_challenge=' + challenge;
-      url += '&code_challenge_method=S256';
+      url += '&code_challenge=' + challenge
+      url += '&code_challenge_method=S256'
     }
 
     if (loginHint) {
-      url += '&login_hint=' + encodeURIComponent(loginHint);
+      url += '&login_hint=' + encodeURIComponent(loginHint)
     }
 
     if (this.config.resource) {
-      url += '&resource=' + encodeURIComponent(this.config.resource);
+      url += '&resource=' + encodeURIComponent(this.config.resource)
     }
 
     if (this.config.oidc) {
-      url += '&nonce=' + encodeURIComponent(nonce);
+      url += '&nonce=' + encodeURIComponent(nonce)
     }
 
     if (noPrompt) {
-      url += '&prompt=none';
+      url += '&prompt=none'
     }
 
     for (const key of Object.keys(params)) {
       url +=
-        '&' + encodeURIComponent(key) + '=' + encodeURIComponent(params[key]);
+        '&' + encodeURIComponent(key) + '=' + encodeURIComponent(params[key])
     }
 
     if (this.config.customQueryParams) {
       for (const key of Object.getOwnPropertyNames(this.config.customQueryParams)) {
         url +=
-          '&' + key + '=' + encodeURIComponent(this.config.customQueryParams[key]);
+          '&' + key + '=' + encodeURIComponent(this.config.customQueryParams[key])
       }
     }
 
@@ -1466,32 +1466,32 @@ export class OAuthService implements OnDestroy {
     params: string | object = ''
   ): void {
     if (this.inImplicitFlow) {
-      return;
+      return
     }
 
-    this.inImplicitFlow = true;
+    this.inImplicitFlow = true
 
     if (!this.validateUrlForHttps(this.config.loginUrl)) {
       throw new Error(
         "loginUrl  must use HTTPS (with TLS), or config value for property 'requireHttps' must be set to 'false' and allow HTTP (without TLS)."
-      );
+      )
     }
 
-    let addParams: object = {};
-    let loginHint: string = null;
+    let addParams: object = {}
+    let loginHint: string = null
 
     if (typeof params === 'string') {
-      loginHint = params;
+      loginHint = params
     } else if (typeof params === 'object') {
-      addParams = params;
+      addParams = params
     }
 
     this.createLoginUrl(additionalState, loginHint, null, false, addParams).pipe(
       tap(url => this.config.openUri(url)),
     ).subscribe({
       error: (err) => {
-        console.error('Error in initImplicitFlow', err);
-        this.inImplicitFlow = false;
+        console.error('Error in initImplicitFlow', err)
+        this.inImplicitFlow = false
       }
     })
   }
@@ -1510,13 +1510,13 @@ export class OAuthService implements OnDestroy {
     params: string | object = ''
   ): void {
     if (this.config.loginUrl !== '') {
-      this.initImplicitFlowInternal(additionalState, params);
+      this.initImplicitFlowInternal(additionalState, params)
     } else {
       this.events
         .pipe(filter((e) => e.type === 'discovery_document_loaded'))
         .subscribe((_) =>
           this.initImplicitFlowInternal(additionalState, params)
-        );
+        )
     }
   }
 
@@ -1526,7 +1526,7 @@ export class OAuthService implements OnDestroy {
    * @description This method allows resetting the current implict flow in order to be initialized again.
    */
   public resetImplicitFlow(): void {
-    this.inImplicitFlow = false;
+    this.inImplicitFlow = false
   }
 
   protected storeAccessTokenResponse(
@@ -1536,34 +1536,34 @@ export class OAuthService implements OnDestroy {
     grantedScopes: String,
     customParameters?: Map<string, string>
   ): void {
-    this._storage.setItem('access_token', accessToken);
+    this._storage.setItem('access_token', accessToken)
     if (grantedScopes && !Array.isArray(grantedScopes)) {
       this._storage.setItem(
         'granted_scopes',
         JSON.stringify(grantedScopes.split(' '))
-      );
+      )
     } else if (grantedScopes && Array.isArray(grantedScopes)) {
-      this._storage.setItem('granted_scopes', JSON.stringify(grantedScopes));
+      this._storage.setItem('granted_scopes', JSON.stringify(grantedScopes))
     }
 
     this._storage.setItem(
       'access_token_stored_at',
       '' + this.dateTimeService.now()
-    );
+    )
     if (expiresIn) {
-      const expiresInMilliSeconds = expiresIn * 1000;
-      const now = this.dateTimeService.new();
-      const expiresAt = now.getTime() + expiresInMilliSeconds;
-      this._storage.setItem('expires_at', '' + expiresAt);
+      const expiresInMilliSeconds = expiresIn * 1000
+      const now = this.dateTimeService.new()
+      const expiresAt = now.getTime() + expiresInMilliSeconds
+      this._storage.setItem('expires_at', '' + expiresAt)
     }
 
     if (refreshToken) {
-      this._storage.setItem('refresh_token', refreshToken);
+      this._storage.setItem('refresh_token', refreshToken)
     }
     if (customParameters) {
       customParameters.forEach((value: string, key: string) => {
-        this._storage.setItem(key, value);
-      });
+        this._storage.setItem(key, value)
+      })
     }
   }
 
@@ -1581,29 +1581,29 @@ export class OAuthService implements OnDestroy {
 
   private parseQueryString(queryString: string): object {
     if (!queryString || queryString.length === 0) {
-      return {};
+      return {}
     }
 
     if (queryString.charAt(0) === '?') {
-      queryString = queryString.substr(1);
+      queryString = queryString.substr(1)
     }
 
-    return this.urlHelper.parseQueryString(queryString);
+    return this.urlHelper.parseQueryString(queryString)
   }
 
   public tryLoginCodeFlow(options?: LoginOptions): Observable<boolean> {
-    options = options || {};
+    options = options || {}
 
     const querySource = options.customHashFragment
       ? options.customHashFragment.substring(1)
-      : window.location.search;
+      : window.location.search
 
-    const parts = this.getCodePartsFromUrl(querySource);
+    const parts = this.getCodePartsFromUrl(querySource)
 
-    const code = parts['code'];
-    const state = parts['state'];
+    const code = parts['code']
+    const state = parts['state']
 
-    const sessionState = parts['session_state'];
+    const sessionState = parts['session_state']
 
     if (!options.preventClearHashAfterLogin) {
       const href =
@@ -1626,7 +1626,7 @@ export class OAuthService implements OnDestroy {
     }
 
     let [nonceInState, userState] = this.parseState(state)
-    this._state = userState;
+    this._state = userState
 
     if (parts['error']) {
       return this.handleLoginError(options, parts, 'code_error')
@@ -1666,7 +1666,7 @@ export class OAuthService implements OnDestroy {
       this._storage.setItem(
         'requested_route',
         window.location.pathname + window.location.search
-      );
+      )
     }
   }
 
@@ -1683,15 +1683,15 @@ export class OAuthService implements OnDestroy {
    */
   private getCodePartsFromUrl(queryString: string): object {
     if (!queryString || queryString.length === 0) {
-      return this.urlHelper.getHashFragmentParams();
+      return this.urlHelper.getHashFragmentParams()
     }
 
     // normalize query string
     if (queryString.charAt(0) === '?') {
-      queryString = queryString.substr(1);
+      queryString = queryString.substr(1)
     }
 
-    return this.urlHelper.parseQueryString(queryString);
+    return this.urlHelper.parseQueryString(queryString)
   }
 
   /**
@@ -1701,28 +1701,28 @@ export class OAuthService implements OnDestroy {
     let params = new HttpParams({ encoder: new WebHttpUrlEncodingCodec() })
       .set('grant_type', 'authorization_code')
       .set('code', code)
-      .set('redirect_uri', options.customRedirectUri || this.config.redirectUri);
+      .set('redirect_uri', options.customRedirectUri || this.config.redirectUri)
 
     if (!this.config.disablePKCE) {
-      let PKCEVerifier;
+      let PKCEVerifier
 
       if (
         this.saveNoncesInLocalStorage &&
         typeof window['localStorage'] !== 'undefined'
       ) {
-        PKCEVerifier = localStorage.getItem('PKCE_verifier');
+        PKCEVerifier = localStorage.getItem('PKCE_verifier')
       } else {
-        PKCEVerifier = this._storage.getItem('PKCE_verifier');
+        PKCEVerifier = this._storage.getItem('PKCE_verifier')
       }
 
       if (!PKCEVerifier) {
-        console.warn('No PKCE verifier found in oauth storage!');
+        console.warn('No PKCE verifier found in oauth storage!')
       } else {
-        params = params.set('code_verifier', PKCEVerifier);
+        params = params.set('code_verifier', PKCEVerifier)
       }
     }
 
-    return this.fetchAndProcessToken(params, options);
+    return this.fetchAndProcessToken(params, options)
   }
 
   private fetchAndProcessToken(params: HttpParams, options: LoginOptions): Observable<TokenResponse> {
@@ -1737,20 +1737,20 @@ export class OAuthService implements OnDestroy {
       })),
       map(opts => {
         if (this.config.useHttpBasicAuth) {
-          opts.headers = opts.headers.set('Authorization', `Basic ${this.createBasicAuthDummyValue()}`);
+          opts.headers = opts.headers.set('Authorization', `Basic ${this.createBasicAuthDummyValue()}`)
         } else {
-          opts.params = opts.params.set('client_id', this.config.clientId);
-          if (!!this.config.dummyClientSecret) opts.params = opts.params.set('client_secret', this.config.dummyClientSecret);
+          opts.params = opts.params.set('client_id', this.config.clientId)
+          if (!!this.config.dummyClientSecret) opts.params = opts.params.set('client_secret', this.config.dummyClientSecret)
         }
-        return opts;
+        return opts
       }),
       map(opts => {
         if (this.config.customQueryParams) {
           for (const key of Object.getOwnPropertyNames(this.config.customQueryParams)) {
-            opts.params = opts.params.set(key, this.config.customQueryParams[key]);
+            opts.params = opts.params.set(key, this.config.customQueryParams[key])
           }
         }
-        return opts;
+        return opts
       }),
       mergeMap(opts => this.http.post<TokenResponse>(this.config.tokenEndpoint, opts.params, { headers: opts.headers })),
       tap((tokenResponse) => this.debug('refresh tokenResponse', tokenResponse)),
@@ -1762,7 +1762,7 @@ export class OAuthService implements OnDestroy {
           this.config.fallbackAccessTokenExpirationTimeInSec,
           tokenResponse.scope,
           this.extractRecognizedCustomParameters(tokenResponse)
-        );
+        )
 
         if (this.config.oidc && tokenResponse.id_token) {
           this.processIdToken(
@@ -1771,34 +1771,34 @@ export class OAuthService implements OnDestroy {
             options.disableNonceCheck
           ).pipe(
             map((result) => {
-              this.storeIdToken(result);
+              this.storeIdToken(result)
 
               this.eventsSubject.next(new OAuthSuccessEvent('token_received'))
               this.eventsSubject.next(new OAuthSuccessEvent('token_refreshed'))
 
-              return tokenResponse;
+              return tokenResponse
             }),
             catchError((err) => {
-              this.eventsSubject.next(new OAuthErrorEvent('token_validation_error', err));
-              console.error('Error validating tokens');
-              console.error(err);
+              this.eventsSubject.next(new OAuthErrorEvent('token_validation_error', err))
+              console.error('Error validating tokens')
+              console.error(err)
 
-              return throwError(err);
+              return throwError(err)
             })
           )
         } else {
-          this.eventsSubject.next(new OAuthSuccessEvent('token_received'));
-          this.eventsSubject.next(new OAuthSuccessEvent('token_refreshed'));
+          this.eventsSubject.next(new OAuthSuccessEvent('token_received'))
+          this.eventsSubject.next(new OAuthSuccessEvent('token_refreshed'))
 
           return tokenResponse
         }
       }),
       catchError((err) => {
-        console.error('Error getting token', err);
+        console.error('Error getting token', err)
         this.eventsSubject.next(
           new OAuthErrorEvent('token_refresh_error', err)
-        );
-        return throwError(err);
+        )
+        return throwError(err)
       })
     )
   }
@@ -1812,47 +1812,47 @@ export class OAuthService implements OnDestroy {
    * @param options Optional options.
    */
   public tryLoginImplicitFlow(options?: LoginOptions): Observable<boolean> {
-    options = options || {};
+    options = options || {}
 
-    let parts: object;
+    let parts: object
 
     if (options.customHashFragment) {
-      parts = this.urlHelper.getHashFragmentParams(options.customHashFragment);
+      parts = this.urlHelper.getHashFragmentParams(options.customHashFragment)
     } else {
-      parts = this.urlHelper.getHashFragmentParams();
+      parts = this.urlHelper.getHashFragmentParams()
     }
 
-    this.debug('parsed url', parts);
+    this.debug('parsed url', parts)
 
-    const state = parts['state'];
+    const state = parts['state']
 
-    let [nonceInState, userState] = this.parseState(state);
-    this._state = userState;
+    let [nonceInState, userState] = this.parseState(state)
+    this._state = userState
 
     if (parts['error']) {
-      this.debug('error trying to login');
-      return this.handleLoginError(options, parts, 'token_error');
+      this.debug('error trying to login')
+      return this.handleLoginError(options, parts, 'token_error')
     }
 
-    const accessToken = parts['access_token'];
-    const idToken = parts['id_token'];
-    const sessionState = parts['session_state'];
-    const grantedScopes = parts['scope'];
+    const accessToken = parts['access_token']
+    const idToken = parts['id_token']
+    const sessionState = parts['session_state']
+    const grantedScopes = parts['scope']
 
     if (!this.config.requestAccessToken && !this.config.oidc) {
       return throwError(
         'Either requestAccessToken or oidc (or both) must be true.'
-      );
+      )
     }
 
     if (this.config.requestAccessToken && !accessToken) {
-      return of(false);
+      return of(false)
     }
     if (this.config.requestAccessToken && !options.disableOAuth2StateCheck && !state) {
-      return of(false);
+      return of(false)
     }
     if (this.config.oidc && !idToken) {
-      return of(false);
+      return of(false)
     }
 
     if (this.config.sessionChecksEnabled && !sessionState) {
@@ -1860,16 +1860,16 @@ export class OAuthService implements OnDestroy {
         'session checks (Session Status Change Notification) ' +
         'were activated in the configuration but the id_token ' +
         'does not contain a session_state claim'
-      );
+      )
     }
 
     if (this.config.requestAccessToken && !options.disableNonceCheck) {
-      const success = this.validateNonce(nonceInState);
+      const success = this.validateNonce(nonceInState)
 
       if (!success) {
-        const event = new OAuthErrorEvent('invalid_nonce_in_state', null);
-        this.eventsSubject.next(event);
-        return throwError(event);
+        const event = new OAuthErrorEvent('invalid_nonce_in_state', null)
+        this.eventsSubject.next(event)
+        return throwError(event)
       }
     }
 
@@ -1879,98 +1879,98 @@ export class OAuthService implements OnDestroy {
         null,
         parts['expires_in'] || this.config.fallbackAccessTokenExpirationTimeInSec,
         grantedScopes
-      );
+      )
     }
 
     if (!this.config.oidc) {
-      this.eventsSubject.next(new OAuthSuccessEvent('token_received'));
+      this.eventsSubject.next(new OAuthSuccessEvent('token_received'))
       if (this.config.clearHashAfterLogin && !options.preventClearHashAfterLogin) {
-        this.clearLocationHash();
+        this.clearLocationHash()
       }
 
-      return of(true);
+      return of(true)
     }
 
     return this.processIdToken(idToken, accessToken, options.disableNonceCheck).pipe(
       map(result => {
-        this.storeIdToken(result);
-        this.storeSessionState(sessionState);
+        this.storeIdToken(result)
+        this.storeSessionState(sessionState)
         if (this.config.clearHashAfterLogin && !options.preventClearHashAfterLogin) {
-          this.clearLocationHash();
+          this.clearLocationHash()
         }
-        this.eventsSubject.next(new OAuthSuccessEvent('token_received'));
-        this.inImplicitFlow = false;
-        return true;
+        this.eventsSubject.next(new OAuthSuccessEvent('token_received'))
+        this.inImplicitFlow = false
+        return true
       }),
       catchError(err => {
         this.eventsSubject.next(
           new OAuthErrorEvent('token_validation_error', err)
-        );
-        this.logger.error('Error validating tokens');
-        this.logger.error(err);
-        return throwError(err);
+        )
+        this.logger.error('Error validating tokens')
+        this.logger.error(err)
+        return throwError(err)
       })
     )
   }
 
   private parseState(state: string): [string, string] {
-    let nonce = state;
-    let userState = '';
+    let nonce = state
+    let userState = ''
 
     if (state) {
-      const idx = state.indexOf(this.config.nonceStateSeparator);
+      const idx = state.indexOf(this.config.nonceStateSeparator)
       if (idx > -1) {
-        nonce = state.substr(0, idx);
-        userState = state.substr(idx + this.config.nonceStateSeparator.length);
+        nonce = state.substr(0, idx)
+        userState = state.substr(idx + this.config.nonceStateSeparator.length)
       }
     }
-    return [nonce, userState];
+    return [nonce, userState]
   }
 
   protected validateNonce(nonceInState: string): boolean {
     const savedNonce = this.getSavedNonce()
     if (savedNonce !== nonceInState) {
-      const err = 'Validating access_token failed, wrong state/nonce.';
-      console.error(err, savedNonce, nonceInState);
-      return false;
+      const err = 'Validating access_token failed, wrong state/nonce.'
+      console.error(err, savedNonce, nonceInState)
+      return false
     }
-    return true;
+    return true
   }
 
   protected storeIdToken(idToken: ParsedIdToken): void {
-    this._storage.setItem('id_token', idToken.idToken);
-    this._storage.setItem('id_token_claims_obj', idToken.idTokenClaimsJson);
-    this._storage.setItem('id_token_expires_at', '' + idToken.idTokenExpiresAt);
+    this._storage.setItem('id_token', idToken.idToken)
+    this._storage.setItem('id_token_claims_obj', idToken.idTokenClaimsJson)
+    this._storage.setItem('id_token_expires_at', '' + idToken.idTokenExpiresAt)
     this._storage.setItem(
       'id_token_stored_at',
       '' + this.dateTimeService.now()
-    );
+    )
   }
 
   protected storeSessionState(sessionState: string): void {
-    this._storage.setItem('session_state', sessionState);
+    this._storage.setItem('session_state', sessionState)
   }
 
   protected getSessionState(): string {
-    return this._storage.getItem('session_state');
+    return this._storage.getItem('session_state')
   }
 
   protected handleLoginError(options: LoginOptions, parts: object, type: EventType): Observable<any> {
-    this.debug('error trying to login');
-    const err = new OAuthErrorEvent(type, {}, parts);
-    this.eventsSubject.next(err);
+    this.debug('error trying to login')
+    const err = new OAuthErrorEvent(type, {}, parts)
+    this.eventsSubject.next(err)
 
     if (this.config.clearHashAfterLogin && !options.preventClearHashAfterLogin) {
-      this.clearLocationHash();
+      this.clearLocationHash()
     }
-    return throwError(err);
+    return throwError(err)
   }
 
   private getClockSkewInMsec(defaultSkewMsc = 600_000) {
     if (!this.config.clockSkewInSec) {
-      return defaultSkewMsc;
+      return defaultSkewMsc
     }
-    return this.config.clockSkewInSec * 1000;
+    return this.config.clockSkewInSec * 1000
   }
 
   /**
@@ -1981,32 +1981,32 @@ export class OAuthService implements OnDestroy {
     accessToken: string,
     skipNonceCheck = false
   ): Observable<ParsedIdToken> {
-    const tokenParts = idToken.split('.');
-    const headerBase64 = this.padBase64(tokenParts[0]);
-    const headerJson = b64DecodeUnicode(headerBase64);
-    const header = JSON.parse(headerJson);
-    const claimsBase64 = this.padBase64(tokenParts[1]);
-    const claimsJson = b64DecodeUnicode(claimsBase64);
-    const claims = JSON.parse(claimsJson);
+    const tokenParts = idToken.split('.')
+    const headerBase64 = this.padBase64(tokenParts[0])
+    const headerJson = b64DecodeUnicode(headerBase64)
+    const header = JSON.parse(headerJson)
+    const claimsBase64 = this.padBase64(tokenParts[1])
+    const claimsJson = b64DecodeUnicode(claimsBase64)
+    const claims = JSON.parse(claimsJson)
 
     if (Array.isArray(claims.aud)) {
       if (claims.aud.every((v) => v !== this.config.clientId)) {
-        const err = 'Wrong audience: ' + claims.aud.join(',');
-        this.logger.warn(err);
-        return throwError(err);
+        const err = 'Wrong audience: ' + claims.aud.join(',')
+        this.logger.warn(err)
+        return throwError(err)
       }
     } else {
       if (claims.aud !== this.config.clientId) {
-        const err = 'Wrong audience: ' + claims.aud;
-        this.logger.warn(err);
-        return throwError(err);
+        const err = 'Wrong audience: ' + claims.aud
+        this.logger.warn(err)
+        return throwError(err)
       }
     }
 
     if (!claims.sub) {
-      const err = 'No sub claim in id_token';
-      this.logger.warn(err);
-      return throwError(err);
+      const err = 'No sub claim in id_token'
+      this.logger.warn(err)
+      return throwError(err)
     }
 
     /* For now, we only check whether the sub against
@@ -2021,29 +2021,29 @@ export class OAuthService implements OnDestroy {
     ) {
       const err =
         'After refreshing, we got an id_token for another user (sub). ' +
-        `Expected sub: ${this.silentRefreshSubject}, received sub: ${claims['sub']}`;
+        `Expected sub: ${this.silentRefreshSubject}, received sub: ${claims['sub']}`
 
-      this.logger.warn(err);
-      return throwError(err);
+      this.logger.warn(err)
+      return throwError(err)
     }
 
     if (!claims.iat) {
-      const err = 'No iat claim in id_token';
-      this.logger.warn(err);
-      return throwError(err);
+      const err = 'No iat claim in id_token'
+      this.logger.warn(err)
+      return throwError(err)
     }
 
     if (!this.config.skipIssuerCheck && claims.iss !== this.config.issuer) {
-      const err = 'Wrong issuer: ' + claims.iss;
-      this.logger.warn(err);
-      return throwError(err);
+      const err = 'Wrong issuer: ' + claims.iss
+      this.logger.warn(err)
+      return throwError(err)
     }
 
     const savedNonce = this.getSavedNonce()
     if (!skipNonceCheck && claims.nonce !== savedNonce) {
-      const err = 'Wrong nonce: ' + claims.nonce;
-      this.logger.warn(err);
-      return throwError(err);
+      const err = 'Wrong nonce: ' + claims.nonce
+      this.logger.warn(err)
+      return throwError(err)
     }
     // at_hash is not applicable to authorization code flow
     // addressing https://github.com/manfredsteyer/angular-oauth2-oidc/issues/661
@@ -2053,35 +2053,35 @@ export class OAuthService implements OnDestroy {
       this.hasOwnProperty('responseType') &&
       (this.config.responseType === 'code' || this.config.responseType === 'id_token')
     ) {
-      this.config.disableAtHashCheck = true;
+      this.config.disableAtHashCheck = true
     }
     if (
       !this.config.disableAtHashCheck &&
       this.config.requestAccessToken &&
       !claims['at_hash']
     ) {
-      const err = 'An at_hash is needed!';
-      this.logger.warn(err);
-      return throwError(err);
+      const err = 'An at_hash is needed!'
+      this.logger.warn(err)
+      return throwError(err)
     }
 
-    const now = this.dateTimeService.now();
-    const issuedAtMSec = claims.iat * 1000;
-    const expiresAtMSec = claims.exp * 1000;
-    const clockSkewInMSec = this.getClockSkewInMsec(); // (this.getClockSkewInMsec() || 600) * 1000;
+    const now = this.dateTimeService.now()
+    const issuedAtMSec = claims.iat * 1000
+    const expiresAtMSec = claims.exp * 1000
+    const clockSkewInMSec = this.getClockSkewInMsec() // (this.getClockSkewInMsec() || 600) * 1000
 
     if (
       issuedAtMSec - clockSkewInMSec >= now ||
       expiresAtMSec + clockSkewInMSec <= now
     ) {
-      const err = 'Token has expired';
-      console.error(err);
+      const err = 'Token has expired'
+      console.error(err)
       console.error({
         now: now,
         issuedAtMSec: issuedAtMSec,
         expiresAtMSec: expiresAtMSec,
-      });
-      return throwError(err);
+      })
+      return throwError(err)
     }
 
     const validationParams: ValidationParams = {
@@ -2091,7 +2091,7 @@ export class OAuthService implements OnDestroy {
       idTokenClaims: claims,
       idTokenHeader: header,
       loadKeys: () => this.loadJwks<object>(),
-    };
+    }
 
     if (this.config.disableAtHashCheck) {
       return this.checkSignature(validationParams).pipe(
@@ -2103,8 +2103,8 @@ export class OAuthService implements OnDestroy {
             idTokenHeader: header,
             idTokenHeaderJson: headerJson,
             idTokenExpiresAt: expiresAtMSec,
-          };
-          return result;
+          }
+          return result
         })
       )
     }
@@ -2112,9 +2112,9 @@ export class OAuthService implements OnDestroy {
     if (!this.config.disableAtHashCheck) {
       const atHashValid = this.checkAtHash(validationParams)
       if (this.config.requestAccessToken && !atHashValid) {
-        const err = 'Wrong at_hash';
-        this.logger.warn(err);
-        return throwError(err);
+        const err = 'Wrong at_hash'
+        this.logger.warn(err)
+        return throwError(err)
       }
     }
 
@@ -2146,7 +2146,7 @@ export class OAuthService implements OnDestroy {
    */
   public getIdentityClaims(): object | null {
     if (!this._storage) return null
-    const claims = this._storage.getItem('id_token_claims_obj');
+    const claims = this._storage.getItem('id_token_claims_obj')
     return !!claims ? JSON.parse(claims) : null
   }
 
@@ -2154,25 +2154,25 @@ export class OAuthService implements OnDestroy {
    * Returns the granted scopes from the server.
    */
   public getGrantedScopes(): object {
-    const scopes = this._storage.getItem('granted_scopes');
+    const scopes = this._storage.getItem('granted_scopes')
     if (!scopes) {
-      return null;
+      return null
     }
-    return JSON.parse(scopes);
+    return JSON.parse(scopes)
   }
 
   /**
    * Returns the current id_token.
    */
   public getIdToken(): string | null {
-    return this._storage ? this._storage.getItem('id_token') : null;
+    return this._storage ? this._storage.getItem('id_token') : null
   }
 
   protected padBase64(base64data: string): string {
     while (base64data.length % 4 !== 0) {
-      base64data += '=';
+      base64data += '='
     }
-    return base64data;
+    return base64data
   }
 
   /**
@@ -2192,17 +2192,17 @@ export class OAuthService implements OnDestroy {
    */
   public getAccessTokenExpiration(): number | null {
     if (!this._storage.getItem('expires_at')) {
-      return null;
+      return null
     }
-    return parseInt(this._storage.getItem('expires_at'), 10);
+    return parseInt(this._storage.getItem('expires_at'), 10)
   }
 
   protected getAccessTokenStoredAt(): number {
-    return parseInt(this._storage.getItem('access_token_stored_at'), 10);
+    return parseInt(this._storage.getItem('access_token_stored_at'), 10)
   }
 
   protected getIdTokenStoredAt(): number {
-    return parseInt(this._storage.getItem('id_token_stored_at'), 10);
+    return parseInt(this._storage.getItem('id_token_stored_at'), 10)
   }
 
   /**
@@ -2211,10 +2211,10 @@ export class OAuthService implements OnDestroy {
    */
   public getIdTokenExpiration(): number | null {
     if (!this._storage.getItem('id_token_expires_at')) {
-      return null;
+      return null
     }
 
-    return parseInt(this._storage.getItem('id_token_expires_at'), 10);
+    return parseInt(this._storage.getItem('id_token_expires_at'), 10)
   }
 
   /**
@@ -2222,19 +2222,19 @@ export class OAuthService implements OnDestroy {
    */
   public hasValidAccessToken(): boolean {
     if (this.getAccessToken()) {
-      const expiresAt = this._storage.getItem('expires_at');
-      const now = this.dateTimeService.new();
+      const expiresAt = this._storage.getItem('expires_at')
+      const now = this.dateTimeService.new()
       if (
         expiresAt &&
         parseInt(expiresAt, 10) < now.getTime() - this.getClockSkewInMsec()
       ) {
-        return false;
+        return false
       }
 
-      return true;
+      return true
     }
 
-    return false;
+    return false
   }
 
   /**
@@ -2242,19 +2242,19 @@ export class OAuthService implements OnDestroy {
    */
   public hasValidIdToken(): boolean {
     if (this.getIdToken()) {
-      const expiresAt = this._storage.getItem('id_token_expires_at');
-      const now = this.dateTimeService.new();
+      const expiresAt = this._storage.getItem('id_token_expires_at')
+      const now = this.dateTimeService.new()
       if (
         expiresAt &&
         parseInt(expiresAt, 10) < now.getTime() - this.getClockSkewInMsec()
       ) {
-        return false;
+        return false
       }
 
-      return true;
+      return true
     }
 
-    return false;
+    return false
   }
 
   /**
@@ -2273,7 +2273,7 @@ export class OAuthService implements OnDestroy {
    * to transmit the access_token to a service
    */
   public authorizationHeader(): string {
-    return 'Bearer ' + this.getAccessToken();
+    return 'Bearer ' + this.getAccessToken()
   }
 
   /**
@@ -2283,99 +2283,99 @@ export class OAuthService implements OnDestroy {
    * @param noRedirectToLogoutUrl
    * @param state
    */
-  public logOut(): void;
-  public logOut(customParameters: boolean | object): void;
-  public logOut(noRedirectToLogoutUrl: boolean): void;
-  public logOut(noRedirectToLogoutUrl: boolean, state: string): void;
+  public logOut(): void
+  public logOut(customParameters: boolean | object): void
+  public logOut(noRedirectToLogoutUrl: boolean): void
+  public logOut(noRedirectToLogoutUrl: boolean, state: string): void
   public logOut(customParameters: boolean | object = {}, state = ''): void {
-    let noRedirectToLogoutUrl = false;
+    let noRedirectToLogoutUrl = false
     if (typeof customParameters === 'boolean') {
-      noRedirectToLogoutUrl = customParameters;
-      customParameters = {};
+      noRedirectToLogoutUrl = customParameters
+      customParameters = {}
     }
 
-    const id_token = this.getIdToken();
-    this._storage.removeItem('access_token');
-    this._storage.removeItem('id_token');
-    this._storage.removeItem('refresh_token');
+    const id_token = this.getIdToken()
+    this._storage.removeItem('access_token')
+    this._storage.removeItem('id_token')
+    this._storage.removeItem('refresh_token')
 
     if (this.saveNoncesInLocalStorage) {
-      localStorage.removeItem('nonce');
-      localStorage.removeItem('PKCE_verifier');
+      localStorage.removeItem('nonce')
+      localStorage.removeItem('PKCE_verifier')
     } else {
-      this._storage.removeItem('nonce');
-      this._storage.removeItem('PKCE_verifier');
+      this._storage.removeItem('nonce')
+      this._storage.removeItem('PKCE_verifier')
     }
 
-    this._storage.removeItem('expires_at');
-    this._storage.removeItem('id_token_claims_obj');
-    this._storage.removeItem('id_token_expires_at');
-    this._storage.removeItem('id_token_stored_at');
-    this._storage.removeItem('access_token_stored_at');
-    this._storage.removeItem('granted_scopes');
-    this._storage.removeItem('session_state');
+    this._storage.removeItem('expires_at')
+    this._storage.removeItem('id_token_claims_obj')
+    this._storage.removeItem('id_token_expires_at')
+    this._storage.removeItem('id_token_stored_at')
+    this._storage.removeItem('access_token_stored_at')
+    this._storage.removeItem('granted_scopes')
+    this._storage.removeItem('session_state')
     if (this.config.customTokenParameters) {
       this.config.customTokenParameters.forEach((customParam) =>
         this._storage.removeItem(customParam)
-      );
+      )
     }
-    this.silentRefreshSubject = null;
+    this.silentRefreshSubject = null
 
-    this.eventsSubject.next(new OAuthInfoEvent('logout'));
+    this.eventsSubject.next(new OAuthInfoEvent('logout'))
 
     if (!this.config.logoutUrl) {
-      return;
+      return
     }
     if (noRedirectToLogoutUrl) {
-      return;
+      return
     }
 
     if (!id_token && !this.config.postLogoutRedirectUri) {
-      return;
+      return
     }
 
-    let logoutUrl: string;
+    let logoutUrl: string
 
     if (!this.validateUrlForHttps(this.config.logoutUrl)) {
       throw new Error(
         "logoutUrl  must use HTTPS (with TLS), or config value for property 'requireHttps' must be set to 'false' and allow HTTP (without TLS)."
-      );
+      )
     }
 
     // For backward compatibility
     if (this.config.logoutUrl.indexOf('{{') > -1) {
       logoutUrl = this.config.logoutUrl
         .replace(/\{\{id_token\}\}/, encodeURIComponent(id_token))
-        .replace(/\{\{client_id\}\}/, encodeURIComponent(this.config.clientId));
+        .replace(/\{\{client_id\}\}/, encodeURIComponent(this.config.clientId))
     } else {
-      let params = new HttpParams({ encoder: new WebHttpUrlEncodingCodec() });
+      let params = new HttpParams({ encoder: new WebHttpUrlEncodingCodec() })
 
       if (id_token) {
-        params = params.set('id_token_hint', id_token);
+        params = params.set('id_token_hint', id_token)
       }
 
       const postLogoutUrl =
         this.config.postLogoutRedirectUri ||
         (this.config.redirectUriAsPostLogoutRedirectUriFallback && this.config.redirectUri) ||
-        '';
+        ''
       if (postLogoutUrl) {
-        params = params.set('post_logout_redirect_uri', postLogoutUrl);
+        params = params.set('post_logout_redirect_uri', postLogoutUrl)
 
         if (state) {
-          params = params.set('state', state);
+          params = params.set('state', state)
         }
       }
 
       for (let key in customParameters) {
-        params = params.set(key, customParameters[key]);
+        params = params.set(key, customParameters[key])
       }
 
       logoutUrl =
         this.config.logoutUrl +
         (this.config.logoutUrl.indexOf('?') > -1 ? '&' : '?') +
-        params.toString();
+        params.toString()
     }
-    this.config.openUri(logoutUrl);
+    this.config.openUri(logoutUrl)
   }
 
   private createAndSaveNonce(): string {
@@ -2410,24 +2410,24 @@ export class OAuthService implements OnDestroy {
    * @ignore
    */
   public ngOnDestroy(): void {
-    this.clearAccessTokenTimer();
-    this.clearIdTokenTimer();
+    this.clearAccessTokenTimer()
+    this.clearIdTokenTimer()
 
-    this.removeSilentRefreshEventListener();
+    this.removeSilentRefreshEventListener()
     const silentRefreshFrame = this.document.getElementById(
       this.config.silentRefreshIFrameName
-    );
+    )
     if (silentRefreshFrame) {
-      silentRefreshFrame.remove();
+      silentRefreshFrame.remove()
     }
 
-    this.stopSessionCheckTimer();
-    this.removeSessionCheckEventListener();
+    this.stopSessionCheckTimer()
+    this.removeSessionCheckEventListener()
     const sessionCheckFrame = this.document.getElementById(
       this.config.sessionCheckIFrameName
-    );
+    )
     if (sessionCheckFrame) {
-      sessionCheckFrame.remove();
+      sessionCheckFrame.remove()
     }
   }
 
@@ -2435,7 +2435,7 @@ export class OAuthService implements OnDestroy {
     if (this.config.rngUrl) {
       throw new Error(
         'createNonce with rng-web-api has not been implemented so far'
-      );
+      )
     }
 
     /*
@@ -2450,43 +2450,43 @@ export class OAuthService implements OnDestroy {
 
     const crypto = typeof self === 'undefined' ? null : self.crypto || self['msCrypto']
     if (crypto) {
-      let bytes = new Uint8Array(size);
-      crypto.getRandomValues(bytes);
+      let bytes = new Uint8Array(size)
+      crypto.getRandomValues(bytes)
 
       // Needed for IE
       if (!bytes.map) {
-        (bytes as any).map = Array.prototype.map;
+        (bytes as any).map = Array.prototype.map
       }
 
-      bytes = bytes.map((x) => unreserved.charCodeAt(x % unreserved.length));
-      id = String.fromCharCode.apply(null, bytes);
+      bytes = bytes.map((x) => unreserved.charCodeAt(x % unreserved.length))
+      id = String.fromCharCode.apply(null, bytes)
     } else {
       while (0 < size--) {
-        id += unreserved[(Math.random() * unreserved.length) | 0];
+        id += unreserved[(Math.random() * unreserved.length) | 0]
       }
     }
 
-    return base64UrlEncode(id);
+    return base64UrlEncode(id)
   }
 
   protected checkAtHash(params: ValidationParams): Observable<boolean> {
     if (!this.tokenValidationHandler) {
       this.logger.warn(
         'No tokenValidationHandler configured. Cannot check at_hash.'
-      );
-      return of(true);
+      )
+      return of(true)
     }
-    return this.tokenValidationHandler.validateAtHash(params);
+    return this.tokenValidationHandler.validateAtHash(params)
   }
 
   protected checkSignature(params: ValidationParams): Observable<any> {
     if (!this.tokenValidationHandler) {
       this.logger.warn(
         'No tokenValidationHandler configured. Cannot check signature.'
-      );
-      return of(null);
+      )
+      return of(null)
     }
-    return this.tokenValidationHandler.validateSignature(params);
+    return this.tokenValidationHandler.validateSignature(params)
   }
 
   /**
@@ -2495,9 +2495,9 @@ export class OAuthService implements OnDestroy {
    */
   public initLoginFlow(additionalState = '', params = {}): void {
     if (this.config.responseType === 'code') {
-      return this.initCodeFlow(additionalState, params);
+      return this.initCodeFlow(additionalState, params)
     } else {
-      return this.initImplicitFlow(additionalState, params);
+      return this.initImplicitFlow(additionalState, params)
     }
   }
 
@@ -2507,11 +2507,11 @@ export class OAuthService implements OnDestroy {
    */
   public initCodeFlow(additionalState = '', params = {}): void {
     if (this.config.loginUrl !== '') {
-      this.initCodeFlowInternal(additionalState, params);
+      this.initCodeFlowInternal(additionalState, params)
     } else {
       this.events
         .pipe(filter((e) => e.type === 'discovery_document_loaded'))
-        .subscribe((_) => this.initCodeFlowInternal(additionalState, params));
+        .subscribe((_) => this.initCodeFlowInternal(additionalState, params))
     }
   }
 
@@ -2519,22 +2519,22 @@ export class OAuthService implements OnDestroy {
     if (!this.validateUrlForHttps(this.config.loginUrl)) {
       throw new Error(
         "loginUrl must use HTTPS (with TLS), or config value for property 'requireHttps' must be set to 'false' and allow HTTP (without TLS)."
-      );
+      )
     }
 
-    let addParams = {};
-    let loginHint = null;
+    let addParams = {}
+    let loginHint = null
     if (typeof params === 'string') {
-      loginHint = params;
+      loginHint = params
     } else if (typeof params === 'object') {
-      addParams = params;
+      addParams = params
     }
 
     this.createLoginUrl(additionalState, loginHint, null, false, addParams).pipe(
       tap(url => this.config.openUri(url)),
     ).subscribe({
       error: (err) => {
-        console.error('Error in initAuthorizationCodeFlow', err);
+        console.error('Error in initAuthorizationCodeFlow', err)
       }
     })
   }
@@ -2544,32 +2544,32 @@ export class OAuthService implements OnDestroy {
       throw new Error(
         'PKCE support for code flow needs a CryptoHander. ' +
         'Did you import the OAuthModule using forRoot() ?'
-      );
+      )
     }
 
-    const verifier = this.createNonce();
-    const challengeRaw = this.crypto.toSha256(verifier);
-    const challenge = base64UrlEncode(challengeRaw);
+    const verifier = this.createNonce()
+    const challengeRaw = this.crypto.toSha256(verifier)
+    const challenge = base64UrlEncode(challengeRaw)
 
-    return [challenge, verifier];
+    return [challenge, verifier]
   }
 
   private extractRecognizedCustomParameters(
     tokenResponse: TokenResponse
   ): Map<string, string> {
-    let foundParameters: Map<string, string> = new Map<string, string>();
+    let foundParameters: Map<string, string> = new Map<string, string>()
     if (!this.config.customTokenParameters) {
-      return foundParameters;
+      return foundParameters
     }
     this.config.customTokenParameters.forEach((recognizedParameter: string) => {
       if (tokenResponse[recognizedParameter]) {
         foundParameters.set(
           recognizedParameter,
           JSON.stringify(tokenResponse[recognizedParameter])
-        );
+        )
       }
-    });
-    return foundParameters;
+    })
+    return foundParameters
   }
 
   /**
@@ -2583,9 +2583,9 @@ export class OAuthService implements OnDestroy {
       applyCorsIssueHandler = <T>(it: Observable<T>) => it.pipe(
         catchError((err: HttpErrorResponse) => {
           if (err.status === 0) {
-            return of<void>(null);
+            return of<void>(null)
           }
-          return throwError(err);
+          return throwError(err)
         }))
     }
     return of({}).pipe(
@@ -2600,12 +2600,12 @@ export class OAuthService implements OnDestroy {
       })),
       map(opts => {
         if (this.config.useHttpBasicAuth) {
-          opts.headers = opts.headers.set('Authorization', `Basic ${this.createBasicAuthDummyValue()}`);
+          opts.headers = opts.headers.set('Authorization', `Basic ${this.createBasicAuthDummyValue()}`)
         } else {
           opts.params = opts.params.set('client_id', this.config.clientId)
           if (!!this.config.dummyClientSecret) opts.params = opts.params.set('client_secret', this.config.dummyClientSecret)
         }
-        return opts;
+        return opts
       }),
       map(opts => {
         if (this.config.customQueryParams) {
@@ -2665,7 +2665,7 @@ export class OAuthService implements OnDestroy {
     // Checking for empty hash is necessary for Firefox
     // as setting an empty hash to an empty string adds # to the URL
     if (location.hash != '') {
-      location.hash = '';
+      location.hash = ''
     }
   }
 }
