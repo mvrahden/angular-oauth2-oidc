@@ -26,7 +26,7 @@
         "dist/sample"
       ],
       "angular-oauth2-oidc": [
-        "projects/lib/src/public_api"
+        "projects/lib/src/public-api"
       ],
       "angular-oauth2-oidc-jwks": [
         "projects/angular-oauth2-oidc-jwks/src/public-api"
