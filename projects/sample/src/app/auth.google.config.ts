@@ -13,8 +13,7 @@ export const googleAuthConfig: AuthConfig = {
   silentRefreshRedirectUri: window.location.origin + '/silent-refresh.html',
 
   // The SPA's id. The SPA is registerd with this id at the auth-server
-  clientId:
-    '1004270452653-m396kcs7jc3970turlp7ffh6bv4t1b86.apps.googleusercontent.com',
+  clientId: '1004270452653-m396kcs7jc3970turlp7ffh6bv4t1b86.apps.googleusercontent.com',
 
   strictDiscoveryDocumentValidation: false,
 

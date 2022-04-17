@@ -30,9 +30,6 @@ import { EventType } from './events'
  */
 @Injectable()
 export class OAuthService implements OnDestroy {
-  // Extending AuthConfig ist just for LEGACY reasons
-  // to not break existing code.
-
   protected eventsSubject: Subject<OAuthEvent> = new Subject<OAuthEvent>()
   protected discoveryDocumentLoadedSubject: Subject<OidcDiscoveryDoc> = new Subject<OidcDiscoveryDoc>()
   protected silentRefreshPostMessageEventListener: EventListener
@@ -54,7 +51,7 @@ export class OAuthService implements OnDestroy {
     protected ngZone: NgZone,
     protected http: HttpClient,
     @Optional() storage: OAuthStorage,
-    @Optional() tokenValidationHandler: ValidationHandler,
+    private tokenValidationHandler: ValidationHandler,
     @Optional() config: AuthConfig,
     protected urlHelper: UrlHelperService,
     protected logger: OAuthLogger,
@@ -65,10 +62,6 @@ export class OAuthService implements OnDestroy {
     this.debug('angular-oauth2-oidc v13')
 
     this._events = this.eventsSubject.asObservable()
-
-    if (!!tokenValidationHandler) {
-      this._tokenValidationHandler = tokenValidationHandler
-    }
 
     if (config) {
       config = config ? config : {}
@@ -82,7 +75,7 @@ export class OAuthService implements OnDestroy {
     } else {
       console.error(
         'No OAuthStorage provided and cannot access default (sessionStorage).' +
-          'Consider providing a custom OAuthStorage implementation in your module.'
+        'Consider providing a custom OAuthStorage implementation in your module.'
       )
     }
 
@@ -104,13 +97,8 @@ export class OAuthService implements OnDestroy {
     return this._config
   }
 
-  // TODO: verify if this is still required w/o ImplicitFlow
-  private _tokenValidationHandler?: ValidationHandler
-  public get tokenValidationHandler(): ValidationHandler | undefined {
-    return this._tokenValidationHandler
-  }
-  public set tokenValidationHandler(v: ValidationHandler | undefined) {
-    this._tokenValidationHandler = v
+  public setTokenValidationHandler(v: ValidationHandler | undefined) {
+    this.tokenValidationHandler = v
   }
 
   /**
@@ -125,6 +113,8 @@ export class OAuthService implements OnDestroy {
   /**
    * The received (passed around) state, when logging
    * in with implicit flow.
+   *
+   * @deprecated
    */
   private _state?: string = ''
   public get state(): string | undefined {
@@ -183,7 +173,7 @@ export class OAuthService implements OnDestroy {
   }
 
   protected setupSessionCheck(): void {
-    this.events.pipe(filter((e) => e.type === 'token_received')).subscribe((e) => {
+    this.events.pipe(filter(e => e.type === 'token_received')).subscribe((e) => {
       this.initSessionCheck()
     })
   }
@@ -223,7 +213,7 @@ export class OAuthService implements OnDestroy {
         if (shouldRunSilentRefresh) {
           // this.silentRefresh(params, noPrompt).catch(_ => {
           this.refreshInternal(params, noPrompt).subscribe({
-            error: (err) => this.debug('Automatic silent refresh did not work', err),
+            error: err => this.debug('Automatic silent refresh did not work', err),
           })
         }
       })
@@ -286,7 +276,7 @@ export class OAuthService implements OnDestroy {
     if (!issuerCheck) {
       errors.push(
         'Every url in discovery document has to start with the issuer url.' +
-          'Also see property strictDiscoveryDocumentValidation.'
+        'Also see property strictDiscoveryDocumentValidation.'
       )
     }
 
@@ -354,7 +344,7 @@ export class OAuthService implements OnDestroy {
 
     if (this.tokenReceivedSubscription) this.tokenReceivedSubscription.unsubscribe()
 
-    this.tokenReceivedSubscription = this.events.pipe(filter((e) => e.type === 'token_received')).subscribe((_) => {
+    this.tokenReceivedSubscription = this.events.pipe(filter(e => e.type === 'token_received')).subscribe((_) => {
       this.clearAccessTokenTimer()
       this.clearIdTokenTimer()
       this.setupExpirationTimers()
@@ -465,7 +455,7 @@ export class OAuthService implements OnDestroy {
     }
 
     return of(fullUrl).pipe(
-      mergeMap((url) => this.http.get<OidcDiscoveryDoc>(url)),
+      mergeMap(url => this.http.get<OidcDiscoveryDoc>(url)),
       mergeMap((doc) => {
         if (!this.validateDiscoveryDocument(doc)) {
           this.eventsSubject.next(new OAuthErrorEvent('discovery_document_validation_error', null))
@@ -533,50 +523,52 @@ export class OAuthService implements OnDestroy {
 
     if (!this.config.skipIssuerCheck && doc.issuer !== this.config.issuer) {
       this.logger.error(
-        'invalid issuer in discovery document',
-        'expected: ' + this.config.issuer,
-        'current: ' + doc.issuer
+        `invalid "issuer" in discovery document`,
+        `expected: ${this.config.issuer}`,
+        `current: ${doc.issuer}`
       )
       return false
     }
 
     errors = this.validateUrlFromDiscoveryDocument(doc.authorization_endpoint)
     if (errors.length > 0) {
-      this.logger.error('error validating authorization_endpoint in discovery document', errors)
+      this.logger.error(`failed validating "authorization_endpoint" in discovery document`, errors)
       return false
     }
 
     errors = this.validateUrlFromDiscoveryDocument(doc.end_session_endpoint)
     if (errors.length > 0) {
-      this.logger.error('error validating end_session_endpoint in discovery document', errors)
+      this.logger.error(`failed validating "end_session_endpoint" in discovery document`, errors)
       return false
     }
 
     errors = this.validateUrlFromDiscoveryDocument(doc.token_endpoint)
     if (errors.length > 0) {
-      this.logger.error('error validating token_endpoint in discovery document', errors)
+      this.logger.error(`failed validating "token_endpoint" in discovery document`, errors)
+      return false
     }
 
     errors = this.validateUrlFromDiscoveryDocument(doc.revocation_endpoint)
     if (errors.length > 0) {
-      this.logger.error('error validating revocation_endpoint in discovery document', errors)
+      this.logger.error(`failed validating "revocation_endpoint" in discovery document`, errors)
+      return false
     }
 
     errors = this.validateUrlFromDiscoveryDocument(doc.userinfo_endpoint)
     if (errors.length > 0) {
-      this.logger.error('error validating userinfo_endpoint in discovery document', errors)
+      this.logger.error(`failed validating "userinfo_endpoint" in discovery document`, errors)
       return false
     }
 
     errors = this.validateUrlFromDiscoveryDocument(doc.jwks_uri)
     if (errors.length > 0) {
-      this.logger.error('error validating jwks_uri in discovery document', errors)
+      this.logger.error(`failed validating "jwks_uri" in discovery document`, errors)
       return false
     }
 
     if (this.config.sessionChecksEnabled && !doc.check_session_iframe) {
       this.logger.warn(
-        'sessionChecksEnabled is activated but discovery document' + ' does not contain a check_session_iframe field'
+        `"sessionChecksEnabled" is activated but discovery document does not contain a "check_session_iframe" field`
       )
     }
 
@@ -603,8 +595,8 @@ export class OAuthService implements OnDestroy {
     headers: HttpHeaders = new HttpHeaders()
   ): Observable<{ token: TokenResponse; userinfo: UserInfo }> {
     return this.fetchTokenUsingPasswordFlow(userName, password, headers).pipe(
-      mergeMap((tokenResponse) =>
-        this.loadUserProfile().pipe(map((userInfo) => ({ token: tokenResponse, userinfo: userInfo })))
+      mergeMap(tokenResponse =>
+        this.loadUserProfile().pipe(map(userInfo => ({ token: tokenResponse, userinfo: userInfo })))
       )
     )
   }
@@ -628,25 +620,24 @@ export class OAuthService implements OnDestroy {
       tap(() => this.debug(`starting to load userinfo`)),
       map(() => this.assertUrlNotEmptyAndCorrectProtocol(this.config.userinfoEndpoint, 'userinfoEndpoint')),
       map(() => new HttpHeaders().set('Authorization', `Bearer ${this.getAccessToken()}`)),
-      mergeMap((headers) =>
+      mergeMap(headers =>
         this.http.get<UserInfo>(this.config.userinfoEndpoint, {
           headers: headers,
           observe: 'response',
         })
       ),
-      tap((resp) => this.debug('received userinfo', resp)),
+      tap(resp => this.debug('received userinfo', resp)),
       map((resp) => {
         let userinfo
         if (resp.headers.get('content-type').startsWith('application/json')) {
           const existingClaims = this.getIdentityClaims() || {}
           if (!this.config.skipSubjectCheck) {
             if (this.config.oidc && (!existingClaims['sub'] || resp.body.sub !== existingClaims['sub'])) {
-              const err =
+              return throwError(
                 'if property oidc is true, the received user-id (sub) has to be the user-id ' +
                 'of the user that has logged in with oidc.\n' +
                 'if you are not using oidc but just oauth2 password flow set oidc to false'
-
-              return throwError(err)
+              )
             }
           }
           userinfo = { ...existingClaims, ...resp.body }
@@ -732,12 +723,12 @@ export class OAuthService implements OnDestroy {
           }
           return opts
         }),
-        mergeMap((opts) =>
+        mergeMap(opts =>
           this.http.post<TokenResponse>(this.config.tokenEndpoint, opts.params, { headers: opts.headers })
         )
       )
       .pipe(
-        tap((tokenResponse) => this.debug('received tokenResponse', tokenResponse)),
+        tap(tokenResponse => this.debug('received tokenResponse', tokenResponse)),
         map((tokenResponse) => {
           this.storeAccessTokenResponse(
             tokenResponse.access_token,
@@ -787,8 +778,8 @@ export class OAuthService implements OnDestroy {
         tap(() => this.debug(`starting token refresh`)),
         map(() => this.assertUrlNotEmptyAndCorrectProtocol(this.config.tokenEndpoint, 'tokenEndpoint')),
         map(() => this.getRefreshToken()),
-        takeWhile((token) => !!token), // skip entire flow when no token exists
-        map((token) => ({
+        takeWhile(token => !!token), // skip entire flow when no token exists
+        map(token => ({
           params: new HttpParams({ encoder: new WebHttpUrlEncodingCodec() })
             .set('grant_type', 'refresh_token')
             .set('scope', this.config.scope)
@@ -813,19 +804,19 @@ export class OAuthService implements OnDestroy {
           }
           return opts
         }),
-        mergeMap((opts) =>
+        mergeMap(opts =>
           this.http.post<TokenResponse>(this.config.tokenEndpoint, opts.params, { headers: opts.headers })
         )
       )
       .pipe(
-        tap((tokenResponse) => this.debug('received tokenResponse', tokenResponse)),
-        mergeMap((tokenResponse) =>
+        tap(tokenResponse => this.debug('received tokenResponse', tokenResponse)),
+        mergeMap(tokenResponse =>
           iif(
             () => !tokenResponse.id_token,
             defer(() => of(tokenResponse)),
             defer(() =>
               this.processIdToken(tokenResponse.id_token, tokenResponse.access_token, true).pipe(
-                tap((parsedIdToken) => this.storeIdToken(parsedIdToken)),
+                tap(parsedIdToken => this.storeIdToken(parsedIdToken)),
                 map(() => tokenResponse)
               )
             )
@@ -871,7 +862,7 @@ export class OAuthService implements OnDestroy {
         preventClearHashAfterLogin: true,
         customRedirectUri: this.config.silentRefreshRedirectUri || this.config.redirectUri,
       }).subscribe({
-        error: (err) => this.debug('tryLogin during silent refresh failed', err),
+        error: err => this.debug('tryLogin during silent refresh failed', err),
       })
     }
 
@@ -917,7 +908,7 @@ export class OAuthService implements OnDestroy {
 
     return of({}).pipe(
       mergeMap(() => this.createLoginUrl(null, null, redirectUri, noPrompt, params)),
-      tap((url) => iframe.setAttribute('src', url)),
+      tap(url => iframe.setAttribute('src', url)),
       map(() => {
         if (!this.config.silentRefreshShowIFrame) {
           iframe.style['display'] = 'none'
@@ -926,11 +917,11 @@ export class OAuthService implements OnDestroy {
       }),
       mergeMap(() => {
         const errors = this.events.pipe(
-          filter((e) => e instanceof OAuthErrorEvent),
+          filter(e => e instanceof OAuthErrorEvent),
           first()
         )
         const success = this.events.pipe(
-          filter((e) => e.type === 'token_received'),
+          filter(e => e.type === 'token_received'),
           first()
         )
         const timeout = of(new OAuthErrorEvent('silent_refresh_timeout', null)).pipe(
@@ -980,7 +971,7 @@ export class OAuthService implements OnDestroy {
         return windowRef
       }),
       tap((windowRef) => {
-        let checkForPopupClosedTimer: any
+        let checkForPopupClosedTimer: number
         if (!windowRef) {
           throw new OAuthErrorEvent('popup_blocked', {})
         } else {
@@ -1158,7 +1149,7 @@ export class OAuthService implements OnDestroy {
       })
     } else if (this.config.silentRefreshRedirectUri) {
       this.silentRefresh().subscribe({
-        error: (err) => this.debug('silent refresh failed after session changed', err),
+        error: err => this.debug('silent refresh failed after session changed', err),
       })
       this.waitForSilentRefreshAfterSessionChange()
     } else {
@@ -1275,7 +1266,7 @@ export class OAuthService implements OnDestroy {
     }
 
     if (!this.config.requestAccessToken && !this.config.oidc) {
-      return throwError('Either requestAccessToken or oidc or both must be true')
+      return throwError('at least one of requestAccessToken or oidc (or both) must be set to "true"')
     }
 
     if (this.config.responseType) {
@@ -1358,10 +1349,9 @@ export class OAuthService implements OnDestroy {
     if (this.inImplicitFlow) {
       return
     }
+    this.assertUrlNotEmptyAndCorrectProtocol(this.config.loginUrl, 'loginUrl')
 
     this.inImplicitFlow = true
-
-    this.assertUrlNotEmptyAndCorrectProtocol(this.config.loginUrl, 'loginUrl')
 
     let addParams: object = {}
     let loginHint: string = null
@@ -1373,11 +1363,13 @@ export class OAuthService implements OnDestroy {
     }
 
     this.createLoginUrl(additionalState, loginHint, null, false, addParams)
-      .pipe(tap((url) => this.config.openUri(url)))
+      .pipe(
+        tap(url => this.config.openUri(url)),
+        finalize(() => (this.inImplicitFlow = false))
+      )
       .subscribe({
         error: (err) => {
           console.error('Error in initImplicitFlow', err)
-          this.inImplicitFlow = false
         },
       })
   }
@@ -1396,18 +1388,9 @@ export class OAuthService implements OnDestroy {
       this.initImplicitFlowInternal(additionalState, params)
     } else {
       this.events
-        .pipe(filter((e) => e.type === 'discovery_document_loaded'))
-        .subscribe((_) => this.initImplicitFlowInternal(additionalState, params))
+        .pipe(filter(e => e.type === 'discovery_document_loaded'))
+        .subscribe(_ => this.initImplicitFlowInternal(additionalState, params))
     }
-  }
-
-  /**
-   * Reset current implicit flow
-   *
-   * @description This method allows resetting the current implict flow in order to be initialized again.
-   */
-  public resetImplicitFlow(): void {
-    this.inImplicitFlow = false
   }
 
   protected storeAccessTokenResponse(
@@ -1525,7 +1508,7 @@ export class OAuthService implements OnDestroy {
 
       if (code) {
         return this.getTokenFromCode(code, options).pipe(
-          map((token) => !!token),
+          map(token => !!token),
           finalize(() => this.restoreRequestedRoute())
         )
       }
@@ -1621,12 +1604,12 @@ export class OAuthService implements OnDestroy {
         }
         return opts
       }),
-      mergeMap((opts) =>
+      mergeMap(opts =>
         this.http.post<TokenResponse>(this.config.tokenEndpoint, opts.params, {
           headers: opts.headers,
         })
       ),
-      tap((tokenResponse) => this.debug('refresh tokenResponse', tokenResponse)),
+      tap(tokenResponse => this.debug('refresh tokenResponse', tokenResponse)),
       map((tokenResponse) => {
         this.storeAccessTokenResponse(
           tokenResponse.access_token,
@@ -1722,8 +1705,8 @@ export class OAuthService implements OnDestroy {
     if (this.config.sessionChecksEnabled && !sessionState) {
       this.logger.warn(
         'session checks (Session Status Change Notification) ' +
-          'were activated in the configuration but the id_token ' +
-          'does not contain a session_state claim'
+        'were activated in the configuration but the id_token ' +
+        'does not contain a session_state claim'
       )
     }
 
@@ -1845,7 +1828,7 @@ export class OAuthService implements OnDestroy {
     const claims = JSON.parse(claimsJson)
 
     if (Array.isArray(claims.aud)) {
-      if (claims.aud.every((v) => v !== this.config.clientId)) {
+      if (claims.aud.every(v => v !== this.config.clientId)) {
         const err = 'Wrong audience: ' + claims.aud.join(',')
         this.logger.warn(err)
         return throwError(err)
@@ -2101,8 +2084,8 @@ export class OAuthService implements OnDestroy {
   public getCustomTokenResponseProperty<T>(requestedProperty: string): T | null {
     const item =
       this._storage &&
-      this.config.customTokenParameters &&
-      this.config.customTokenParameters.indexOf(requestedProperty) >= 0
+        this.config.customTokenParameters &&
+        this.config.customTokenParameters.indexOf(requestedProperty) >= 0
         ? this._storage.getItem(requestedProperty)
         : null
     return item !== null ? (JSON.parse(item) as T) : null
@@ -2149,7 +2132,7 @@ export class OAuthService implements OnDestroy {
     this._storage.removeItem('granted_scopes')
     this._storage.removeItem('session_state')
     if (this.config.customTokenParameters) {
-      this.config.customTokenParameters.forEach((customParam) => this._storage.removeItem(customParam))
+      this.config.customTokenParameters.forEach(customParam => this._storage.removeItem(customParam))
     }
     this.silentRefreshSubject = null
 
@@ -2271,10 +2254,10 @@ export class OAuthService implements OnDestroy {
 
       // Needed for IE
       if (!bytes.map) {
-        ;(bytes as any).map = Array.prototype.map
+        ; (bytes as any).map = Array.prototype.map
       }
 
-      bytes = bytes.map((x) => unreserved.charCodeAt(x % unreserved.length))
+      bytes = bytes.map(x => unreserved.charCodeAt(x % unreserved.length))
       id = String.fromCharCode.apply(null, bytes)
     } else {
       while (0 < size--) {
@@ -2288,16 +2271,16 @@ export class OAuthService implements OnDestroy {
 
   protected checkAtHash(params: ValidationParams): Observable<boolean> {
     if (!this.tokenValidationHandler) {
-      this.logger.warn('No tokenValidationHandler configured. Cannot check at_hash.')
+      this.logger.warn(`No "tokenValidationHandler" configured. Skipping 'at_hash' check.`)
       return of(true)
     }
     return this.tokenValidationHandler.validateAtHash(params)
   }
 
-  protected checkSignature(params: ValidationParams): Observable<any> {
+  protected checkSignature(params: ValidationParams): Observable<boolean> {
     if (!this.tokenValidationHandler) {
-      this.logger.warn('No tokenValidationHandler configured. Cannot check signature.')
-      return of(null)
+      this.logger.warn(`No "tokenValidationHandler" configured. Skipping 'signature' check.`)
+      return of(true)
     }
     return this.tokenValidationHandler.validateSignature(params)
   }
@@ -2323,8 +2306,8 @@ export class OAuthService implements OnDestroy {
       this.initCodeFlowInternal(additionalState, params)
     } else {
       this.events
-        .pipe(filter((e) => e.type === 'discovery_document_loaded'))
-        .subscribe((_) => this.initCodeFlowInternal(additionalState, params))
+        .pipe(filter(e => e.type === 'discovery_document_loaded'))
+        .subscribe(_ => this.initCodeFlowInternal(additionalState, params))
     }
   }
 
@@ -2340,7 +2323,7 @@ export class OAuthService implements OnDestroy {
     }
 
     this.createLoginUrl(additionalState, loginHint, null, false, addParams)
-      .pipe(map((url) => this.config.openUri(url)))
+      .pipe(map(url => this.config.openUri(url)))
       .subscribe({
         error: (err) => {
           console.error('Error in initAuthorizationCodeFlow', err)
@@ -2387,7 +2370,7 @@ export class OAuthService implements OnDestroy {
     } = {},
     ignoreCorsIssues = false
   ): Observable<boolean> {
-    let applyCorsIssueHandler = (it) => it // noop
+    let applyCorsIssueHandler = it => it // noop
     if (ignoreCorsIssues) {
       applyCorsIssueHandler = <T>(it: Observable<T>) =>
         it.pipe(
@@ -2404,7 +2387,7 @@ export class OAuthService implements OnDestroy {
         tap(() => this.debug('starting to revoke and logout')),
         map(() => this.assertUrlNotEmptyAndCorrectProtocol(this.config.revocationEndpoint, 'revocationEndpoint')),
         map(() => this.getAccessToken()),
-        takeWhile((token) => !!token), // skip entire flow when no token exists
+        takeWhile(token => !!token), // skip entire flow when no token exists
         map(() => ({
           params: new HttpParams({ encoder: new WebHttpUrlEncodingCodec() }),
           headers: new HttpHeaders().set('Content-Type', 'application/x-www-form-urlencoded'),

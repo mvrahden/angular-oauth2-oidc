@@ -21,7 +21,7 @@ export class DefaultOAuthInterceptor implements HttpInterceptor {
     }
 
     if (this.moduleConfig.resourceServer.allowedUrls) {
-      return !!this.moduleConfig.resourceServer.allowedUrls.find((u) => url.toLowerCase().startsWith(u.toLowerCase()))
+      return !!this.moduleConfig.resourceServer.allowedUrls.find(u => url.toLowerCase().startsWith(u.toLowerCase()))
     }
 
     return true
@@ -37,16 +37,16 @@ export class DefaultOAuthInterceptor implements HttpInterceptor {
     const sendAccessToken = this.moduleConfig.resourceServer.sendAccessToken
 
     if (!sendAccessToken) {
-      return next.handle(req).pipe(catchError((err) => this.errorHandler.handleError(err)))
+      return next.handle(req).pipe(catchError(err => this.errorHandler.handleError(err)))
     }
 
     return merge(
-      of(this.oAuthService.getAccessToken()).pipe(filter((token) => !!token)),
+      of(this.oAuthService.getAccessToken()).pipe(filter(token => !!token)),
       this.oAuthService.events.pipe(
-        filter((e) => e.type === 'token_received'),
+        filter(e => e.type === 'token_received'),
         timeout(this.oAuthService.config.waitForTokenInMsec || 0),
-        catchError((_) => of(null)), // timeout is not an error
-        map((_) => this.oAuthService.getAccessToken())
+        catchError(_ => of(null)), // timeout is not an error
+        map(_ => this.oAuthService.getAccessToken())
       )
     ).pipe(
       take(1),
@@ -57,7 +57,7 @@ export class DefaultOAuthInterceptor implements HttpInterceptor {
           req = req.clone({ headers })
         }
 
-        return next.handle(req).pipe(catchError((err) => this.errorHandler.handleError(err)))
+        return next.handle(req).pipe(catchError(err => this.errorHandler.handleError(err)))
       })
     )
   }

@@ -79,12 +79,15 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#getItem" >getItem</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#removeItem" >removeItem</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#setItem" >setItem</a>
                             </li>
                         </ul>
@@ -111,6 +114,7 @@
                 <td class="col-md-4">
                     <a name="getItem"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span ><b>getItem</b></span>
                         <a href="#getItem"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -118,15 +122,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>getItem(key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>getItem(key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="84"
-                            class="link-to-prism">projects/lib/src/types.ts:84</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="85"
+                            class="link-to-prism">projects/lib/src/types.ts:85</a></div>
                 </td>
             </tr>
 
@@ -180,6 +185,7 @@
                 <td class="col-md-4">
                     <a name="removeItem"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span ><b>removeItem</b></span>
                         <a href="#removeItem"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -187,15 +193,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>removeItem(key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>removeItem(key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="88"
-                            class="link-to-prism">projects/lib/src/types.ts:88</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="89"
+                            class="link-to-prism">projects/lib/src/types.ts:89</a></div>
                 </td>
             </tr>
 
@@ -249,6 +256,7 @@
                 <td class="col-md-4">
                     <a name="setItem"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span ><b>setItem</b></span>
                         <a href="#setItem"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -256,15 +264,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>setItem(key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>setItem(key: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>, data: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="92"
-                            class="link-to-prism">projects/lib/src/types.ts:92</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="93"
+                            class="link-to-prism">projects/lib/src/types.ts:93</a></div>
                 </td>
             </tr>
 
@@ -346,7 +355,7 @@ export class LoginOptions {
    * question mark is optional, but may be present following
    * the hash symbol.
    */
-  customHashFragment?: string
+  public customHashFragment?: string
 
   /**
    * Set this to true to disable the oauth2 state
@@ -356,7 +365,7 @@ export class LoginOptions {
    * this, this can be set to true when only doing
    * OIDC.
    */
-  disableOAuth2StateCheck?: boolean
+  public disableOAuth2StateCheck?: boolean
 
   /**
    * Set this to true to disable the nonce
@@ -365,7 +374,7 @@ export class LoginOptions {
    * This flag should never be true in
    * production environments.
    */
-  disableNonceCheck? &#x3D; false
+  public disableNonceCheck? &#x3D; false
 
   /**
    * Normally, you want to clear your hash fragment after
@@ -373,14 +382,14 @@ export class LoginOptions {
    * anymore in the url. If not, set this to true. For code flow
    * this controls removing query string values.
    */
-  preventClearHashAfterLogin? &#x3D; false
+  public preventClearHashAfterLogin? &#x3D; false
 
   /**
    * Set this for code flow if you used a custom redirect Uri
    * when retrieving the code. This is used internally for silent
    * refresh and popup flows.
    */
-  customRedirectUri?: string
+  public customRedirectUri?: string
 }
 
 /**
@@ -390,11 +399,11 @@ export class LoginOptions {
  * through dependency injection.
  */
 export abstract class OAuthLogger {
-  abstract debug(message?: any, ...optionalParams: any[]): void
-  abstract info(message?: any, ...optionalParams: any[]): void
-  abstract log(message?: any, ...optionalParams: any[]): void
-  abstract warn(message?: any, ...optionalParams: any[]): void
-  abstract error(message?: any, ...optionalParams: any[]): void
+  public abstract debug(message?: any, ...optionalParams: any[]): void
+  public abstract info(message?: any, ...optionalParams: any[]): void
+  public abstract log(message?: any, ...optionalParams: any[]): void
+  public abstract warn(message?: any, ...optionalParams: any[]): void
+  public abstract error(message?: any, ...optionalParams: any[]): void
 }
 
 /**
@@ -404,24 +413,24 @@ export abstract class OAuthLogger {
  * but you can also create your own implementations.
  */
 export abstract class OAuthStorage {
-  abstract getItem(key: string): string | null
-  abstract removeItem(key: string): void
-  abstract setItem(key: string, data: string): void
+  public abstract getItem(key: string): string | null
+  public abstract removeItem(key: string): void
+  public abstract setItem(key: string, data: string): void
 }
 
 @Injectable()
 export class MemoryStorage implements OAuthStorage {
   private data &#x3D; new Map&lt;string, string&gt;()
 
-  getItem(key: string): string {
+  public getItem(key: string): string {
     return this.data.get(key)
   }
 
-  removeItem(key: string): void {
+  public removeItem(key: string): void {
     this.data.delete(key)
   }
 
-  setItem(key: string, data: string): void {
+  public setItem(key: string, data: string): void {
     this.data.set(key, data)
   }
 }
@@ -431,10 +440,10 @@ export class MemoryStorage implements OAuthStorage {
  * and the parsed claims from the id-token.
  */
 export class ReceivedTokens {
-  idToken: string
-  accessToken: string
-  idClaims?: object
-  state?: string
+  public idToken: string
+  public accessToken: string
+  public idClaims?: object
+  public state?: string
 }
 
 /**

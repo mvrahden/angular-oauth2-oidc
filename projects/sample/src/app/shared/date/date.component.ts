@@ -2,9 +2,7 @@ import { Component, Input, OnInit, OnChanges } from '@angular/core'
 
 @Component({
   selector: 'date-component',
-  template: `
-    <div>{{ day }}.{{ month }}.{{ year }} {{ hour }}:{{ minute }}</div>
-  `,
+  template: ` <div>{{ day }}.{{ month }}.{{ year }} {{ hour }}:{{ minute }}</div> `,
 })
 export class DateComponent implements OnInit, OnChanges {
   @Input() date: string

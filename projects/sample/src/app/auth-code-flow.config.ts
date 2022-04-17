@@ -7,9 +7,7 @@ export const authCodeFlowConfig: AuthConfig = {
   // URL of the SPA to redirect the user to after login
   redirectUri:
     window.location.origin +
-    (localStorage.getItem('useHashLocationStrategy') === 'true'
-      ? '/#/index.html'
-      : '/index.html'),
+    (localStorage.getItem('useHashLocationStrategy') === 'true' ? '/#/index.html' : '/index.html'),
 
   // The SPA's id. The SPA is registerd with this id at the auth-server
   // clientId: 'server.code',
@@ -27,9 +25,7 @@ export const authCodeFlowConfig: AuthConfig = {
   // The first four are defined by OIDC.
   // Important: Request offline_access to get a refresh token
   // The api scope is a usecase specific one
-  scope: useSilentRefreshForCodeFlow
-    ? 'openid profile email api'
-    : 'openid profile email offline_access api',
+  scope: useSilentRefreshForCodeFlow ? 'openid profile email api' : 'openid profile email offline_access api',
 
   // ^^ Please note that offline_access is not needed for silent refresh
   // At least when using idsvr, this even prevents silent refresh

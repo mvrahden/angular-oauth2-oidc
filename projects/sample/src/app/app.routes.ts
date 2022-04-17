@@ -19,10 +19,7 @@ export let APP_ROUTES: Routes = [
   },
   {
     path: 'flight-booking',
-    loadChildren: () =>
-      import('./flight-booking/flight-booking.module').then(
-        (mod) => mod.FlightBookingModule
-      ),
+    loadChildren: () => import('./flight-booking/flight-booking.module').then((mod) => mod.FlightBookingModule),
   },
   {
     path: 'history',

@@ -5,12 +5,7 @@ import { Flight } from '../../entities/flight'
   template: `
     <div class="row">
       <div *ngFor="let f of flights" class="col-sm-6 col-md-4 col-lg-3 ">
-        <alt-flight-card
-          [item]="f"
-          [selected]="f == selectedFlight"
-          (selectedChange)="change(f)"
-        >
-        </alt-flight-card>
+        <alt-flight-card [item]="f" [selected]="f == selectedFlight" (selectedChange)="change(f)"> </alt-flight-card>
       </div>
     </div>
   `,

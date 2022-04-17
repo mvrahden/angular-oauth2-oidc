@@ -83,6 +83,7 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#resourceServer" >resourceServer</a>
                             </li>
                         </ul>
@@ -110,6 +111,7 @@
                 <td class="col-md-4">
                     <a name="resourceServer"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>resourceServer</b></span>
                         <a href="#resourceServer"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -143,7 +145,7 @@
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export abstract class OAuthModuleConfig {
-  resourceServer: OAuthResourceServerConfig
+  public resourceServer: OAuthResourceServerConfig
 }
 
 export abstract class OAuthResourceServerConfig {
@@ -152,9 +154,9 @@ export abstract class OAuthResourceServerConfig {
    * If there is an ResourceServerErrorHandler registered, it is used for them.
    * If sendAccessToken is set to true, the access_token is send to them too.
    */
-  allowedUrls?: Array&lt;string&gt;
-  sendAccessToken: boolean
-  customUrlValidation?: (url: string) &#x3D;&gt; boolean
+  public allowedUrls?: Array&lt;string&gt;
+  public sendAccessToken: boolean
+  public customUrlValidation?: (url: string) &#x3D;&gt; boolean
 }
 </code></pre>
     </div>

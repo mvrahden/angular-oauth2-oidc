@@ -79,12 +79,15 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#toHashString" >toHashString</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#toHashString2" >toHashString2</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#toSha256" >toSha256</a>
                             </li>
                         </ul>
@@ -111,6 +114,7 @@
                 <td class="col-md-4">
                     <a name="toHashString"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span ><b>toHashString</b></span>
                         <a href="#toHashString"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -118,15 +122,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>toHashString(buffer: ArrayBuffer)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>toHashString(buffer: ArrayBuffer)</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="44"
-                            class="link-to-prism">projects/lib/src/token-validation/hash-handler.ts:44</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="42"
+                            class="link-to-prism">projects/lib/src/token-validation/hash-handler.ts:42</a></div>
                 </td>
             </tr>
 
@@ -180,6 +185,7 @@
                 <td class="col-md-4">
                     <a name="toHashString2"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span ><b>toHashString2</b></span>
                         <a href="#toHashString2"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -187,15 +193,16 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>toHashString2(byteArray: number[])</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>toHashString2(byteArray: number[])</code>
                 </td>
             </tr>
 
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="36"
-                            class="link-to-prism">projects/lib/src/token-validation/hash-handler.ts:36</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="34"
+                            class="link-to-prism">projects/lib/src/token-validation/hash-handler.ts:34</a></div>
                 </td>
             </tr>
 
@@ -249,6 +256,7 @@
                 <td class="col-md-4">
                     <a name="toSha256"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span ><b>toSha256</b></span>
                         <a href="#toSha256"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -256,7 +264,8 @@
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>toSha256(valueToHash: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>toSha256(valueToHash: <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/string" target="_blank">string</a>)</code>
                 </td>
             </tr>
 
@@ -331,10 +340,8 @@ export abstract class HashHandler {
 
 @Injectable()
 export class DefaultHashHandler implements HashHandler {
-  toSha256(valueToHash: string): string {
-    return DefaultHashHandler.encodeUTF8(
-      fsha256(DefaultHashHandler.decodeUTF8(valueToHash))
-    )
+  public toSha256(valueToHash: string): string {
+    return DefaultHashHandler.encodeUTF8(fsha256(DefaultHashHandler.decodeUTF8(valueToHash)))
   }
 
   private static decodeUTF8(s) {
@@ -353,18 +360,18 @@ export class DefaultHashHandler implements HashHandler {
     return s.join(&#x27;&#x27;)
   }
 
-  toHashString2(byteArray: number[]) {
+  public toHashString2(byteArray: number[]) {
     let result &#x3D; &#x27;&#x27;
-    for (let e of byteArray) {
+    for (const e of byteArray) {
       result +&#x3D; String.fromCharCode(e)
     }
     return result
   }
 
-  toHashString(buffer: ArrayBuffer) {
+  public toHashString(buffer: ArrayBuffer) {
     const byteArray &#x3D; new Uint8Array(buffer)
     let result &#x3D; &#x27;&#x27;
-    for (let e of byteArray) {
+    for (const e of byteArray) {
       result +&#x3D; String.fromCharCode(e)
     }
     return result

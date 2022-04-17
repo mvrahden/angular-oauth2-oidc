@@ -44,7 +44,8 @@
         "id-blacklist": "off",
         "id-match": "off",
         "no-empty": "error",
-        "no-underscore-dangle": "off"
+        "no-underscore-dangle": "off",
+        "arrow-parens": ["warn", "as-needed", { "requireForBlockBody": true }]
       }
     },
     {

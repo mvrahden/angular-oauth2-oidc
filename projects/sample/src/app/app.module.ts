@@ -1,13 +1,7 @@
 import { NgModule } from '@angular/core'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { BrowserModule } from '@angular/platform-browser'
-import {
-  OAuthModule,
-  OAuthStorage,
-  DateTimeProvider,
-  AuthConfig,
-  ValidationHandler,
-} from 'angular-oauth2-oidc'
+import { OAuthModule, OAuthStorage, DateTimeProvider, AuthConfig, ValidationHandler } from 'angular-oauth2-oidc'
 import { HttpClientModule } from '@angular/common/http'
 
 import { AppComponent } from './app.component'
@@ -23,7 +17,6 @@ import { useHash } from '../flags'
 import { authConfig } from './auth.config'
 
 // import { CustomDateTimeProvider } from './shared/date/custom-date-time-provider'
-// import { JwksValidationHandler } from 'angular-oauth2-oidc-jwks'
 
 @NgModule({
   imports: [
@@ -40,19 +33,13 @@ import { authConfig } from './auth.config'
       },
     }),
   ],
-  declarations: [
-    AppComponent,
-    HomeComponent,
-    FlightHistoryComponent,
-    PasswordFlowLoginComponent,
-  ],
+  declarations: [AppComponent, HomeComponent, FlightHistoryComponent, PasswordFlowLoginComponent],
   providers: [
     // useHash
     //   ? { provide: LocationStrategy, useClass: HashLocationStrategy }
     //   : [],
     // { provide: AuthConfig, useValue: authConfig },
     // { provide: OAuthStorage, useValue: localStorage },
-    // { provide: ValidationHandler, useClass: JwksValidationHandler },
     // Enabled the custom date time provider will make the sample fail to login, since the demo Idp time is correctly synced to the world time.
     // { provide: DateTimeProvider, useClass: CustomDateTimeProvider },
     { provide: BASE_URL, useValue: 'http://www.angular.at' },

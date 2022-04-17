@@ -1,5 +1,4 @@
 import { NgModule } from '@angular/core'
-import { FlightSearchComponent } from './flight-search/flight-search.component'
 import { FlightCardComponent } from './flight-card/flight.card.component'
 import { AltFlightCardComponent } from './alt-flight-card/alt-flight.card.component'
 import { FlightListComponent } from './alt-flight-card/flight-list'
@@ -22,7 +21,6 @@ import { FlightService } from './services/flight.service'
     FlightBookingRouterModule,
   ],
   declarations: [
-    FlightSearchComponent,
     FlightCardComponent,
     AltFlightCardComponent,
     FlightListComponent,

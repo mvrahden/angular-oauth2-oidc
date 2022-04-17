@@ -8,7 +8,10 @@ import { OAuthService } from './oauth-service'
 import { UrlHelperService } from './url-helper.service'
 
 import { OAuthModuleConfig } from './oauth-module.config'
-import { OAuthResourceServerErrorHandler, OAuthNoopResourceServerErrorHandler } from './interceptors/resource-server-error-handler'
+import {
+  OAuthResourceServerErrorHandler,
+  OAuthNoopResourceServerErrorHandler,
+} from './interceptors/resource-server-error-handler'
 import { DefaultOAuthInterceptor } from './interceptors/default-oauth.interceptor'
 import { ValidationHandler } from './token-validation/validation-handler'
 import { NullValidationHandler } from './token-validation/null-validation-handler'

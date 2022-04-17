@@ -94,8 +94,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="30"
-                            class="link-to-prism">projects/lib/src/angular-oauth-oidc.module.ts:30</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="27"
+                            class="link-to-prism">projects/lib/src/angular-oauth-oidc.module.ts:27</a></div>
                 </td>
             </tr>
 
@@ -184,10 +184,7 @@ import { DefaultOAuthInterceptor } from &#x27;./interceptors/default-oauth.inter
 import { ValidationHandler } from &#x27;./token-validation/validation-handler&#x27;
 import { NullValidationHandler } from &#x27;./token-validation/null-validation-handler&#x27;
 import { createDefaultLogger, createDefaultStorage } from &#x27;./factories&#x27;
-import {
-  HashHandler,
-  DefaultHashHandler,
-} from &#x27;./token-validation/hash-handler&#x27;
+import { HashHandler, DefaultHashHandler } from &#x27;./token-validation/hash-handler&#x27;
 
 @NgModule({
   imports: [CommonModule],
@@ -195,7 +192,7 @@ import {
   exports: [],
 })
 export class OAuthModule {
-  static forRoot(
+  public static forRoot(
     config: OAuthModuleConfig &#x3D; null,
     validationHandlerClass &#x3D; NullValidationHandler
   ): ModuleWithProviders&lt;OAuthModule&gt; {

@@ -7,10 +7,7 @@ export class AuthGuard implements CanActivate {
   constructor(private router: Router, private oauthService: OAuthService) {}
 
   canActivate() {
-    if (
-      this.oauthService.hasValidAccessToken() &&
-      this.oauthService.hasValidIdToken()
-    ) {
+    if (this.oauthService.hasValidAccessToken() && this.oauthService.hasValidIdToken()) {
       return true
     } else {
       this.router.navigate(['/home', { login: true }])

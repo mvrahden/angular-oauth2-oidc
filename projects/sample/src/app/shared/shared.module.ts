@@ -16,20 +16,8 @@ import { CustomPreloadingStrategy } from './preload/custom-preloading.strategy'
     CommonModule, // ngFor, ngIf, ngStyle, ngClass, date, json
   ],
   providers: [],
-  declarations: [
-    CityPipe,
-    CityValidatorDirective,
-    AsyncCityValidatorDirective,
-    RoundTrip,
-    DateComponent,
-  ],
-  exports: [
-    CityPipe,
-    CityValidatorDirective,
-    AsyncCityValidatorDirective,
-    RoundTrip,
-    DateComponent,
-  ],
+  declarations: [CityPipe, CityValidatorDirective, AsyncCityValidatorDirective, RoundTrip, DateComponent],
+  exports: [CityPipe, CityValidatorDirective, AsyncCityValidatorDirective, RoundTrip, DateComponent],
 })
 export class SharedModule {
   static forRoot(): ModuleWithProviders<SharedModule> {

@@ -83,14 +83,17 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Optional</span>
                                 <a href="#allowedUrls" >allowedUrls</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Optional</span>
                                 <a href="#customUrlValidation" >customUrlValidation</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#sendAccessToken" >sendAccessToken</a>
                             </li>
                         </ul>
@@ -118,6 +121,7 @@
                 <td class="col-md-4">
                     <a name="allowedUrls"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Optional</span>
                         <span ><b>allowedUrls</b></span>
                         <a href="#allowedUrls"><span class="icon ion-ios-link"></span></a>
@@ -153,6 +157,7 @@ If sendAccessToken is set to true, the access_token is send to them too.</p>
                 <td class="col-md-4">
                     <a name="customUrlValidation"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                             <span class="modifier">Optional</span>
                         <span ><b>customUrlValidation</b></span>
                         <a href="#customUrlValidation"><span class="icon ion-ios-link"></span></a>
@@ -180,6 +185,7 @@ If sendAccessToken is set to true, the access_token is send to them too.</p>
                 <td class="col-md-4">
                     <a name="sendAccessToken"></a>
                     <span class="name">
+                            <span class="modifier">Public</span>
                         <span ><b>sendAccessToken</b></span>
                         <a href="#sendAccessToken"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -213,7 +219,7 @@ If sendAccessToken is set to true, the access_token is send to them too.</p>
 
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">export abstract class OAuthModuleConfig {
-  resourceServer: OAuthResourceServerConfig
+  public resourceServer: OAuthResourceServerConfig
 }
 
 export abstract class OAuthResourceServerConfig {
@@ -222,9 +228,9 @@ export abstract class OAuthResourceServerConfig {
    * If there is an ResourceServerErrorHandler registered, it is used for them.
    * If sendAccessToken is set to true, the access_token is send to them too.
    */
-  allowedUrls?: Array&lt;string&gt;
-  sendAccessToken: boolean
-  customUrlValidation?: (url: string) &#x3D;&gt; boolean
+  public allowedUrls?: Array&lt;string&gt;
+  public sendAccessToken: boolean
+  public customUrlValidation?: (url: string) &#x3D;&gt; boolean
 }
 </code></pre>
     </div>

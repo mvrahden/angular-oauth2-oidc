@@ -21,8 +21,6 @@ describe('AppComponent', () => {
     fixture.detectChanges()
     const compiled = fixture.debugElement.nativeElement
     console.log(compiled)
-    expect(compiled.querySelectorAll(' li a')[2].textContent).toContain(
-      'Book a Flight'
-    )
+    expect(compiled.querySelectorAll(' li a')[2].textContent).toContain('Book a Flight')
   }))
 })

@@ -84,10 +84,12 @@
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Abstract</span>
                                 <a href="#new" >new</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Abstract</span>
                                 <a href="#now" >now</a>
                             </li>
@@ -116,6 +118,7 @@
                 <td class="col-md-4">
                     <a name="new"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span class="modifier">Abstract</span>
                         <span ><b>new</b></span>
                         <a href="#new"><span class="icon ion-ios-link"></span></a>
@@ -155,6 +158,7 @@
                 <td class="col-md-4">
                     <a name="now"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span class="modifier">Abstract</span>
                         <span ><b>now</b></span>
                         <a href="#now"><span class="icon ion-ios-link"></span></a>
@@ -201,17 +205,17 @@
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable } from &#x27;@angular/core&#x27;
 
 export abstract class DateTimeProvider {
-  abstract now(): number
-  abstract new(): Date
+  public abstract now(): number
+  public abstract new(): Date
 }
 
 @Injectable()
 export class SystemDateTimeProvider extends DateTimeProvider {
-  now(): number {
+  public now(): number {
     return Date.now()
   }
 
-  new(): Date {
+  public new(): Date {
     return new Date()
   }
 }

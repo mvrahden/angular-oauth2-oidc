@@ -100,12 +100,13 @@
             <tbody>
                 <tr>
                     <td class="col-md-4">
-<code>constructor(oAuthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, errorHandler: <a href="../classes/OAuthResourceServerErrorHandler.html" target="_self">OAuthResourceServerErrorHandler</a>, moduleConfig: <a href="../classes/OAuthModuleConfig.html" target="_self">OAuthModuleConfig</a>)</code>
+                                <span class="modifier">Public</span>
+                        <code>constructor(oAuthService: <a href="../injectables/OAuthService.html" target="_self">OAuthService</a>, errorHandler: <a href="../classes/OAuthResourceServerErrorHandler.html" target="_self">OAuthResourceServerErrorHandler</a>, moduleConfig: <a href="../classes/OAuthModuleConfig.html" target="_self">OAuthModuleConfig</a>)</code>
                     </td>
                 </tr>
                         <tr>
                             <td class="col-md-4">
-                                <div class="io-line">Defined in <a href="" data-line="23" class="link-to-prism">projects/lib/src/interceptors/default-oauth.interceptor.ts:23</a></div>
+                                <div class="io-line">Defined in <a href="" data-line="11" class="link-to-prism">projects/lib/src/interceptors/default-oauth.interceptor.ts:11</a></div>
                             </td>
                         </tr>
 
@@ -194,8 +195,8 @@
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="44"
-                            class="link-to-prism">projects/lib/src/interceptors/default-oauth.interceptor.ts:44</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="30"
+                            class="link-to-prism">projects/lib/src/interceptors/default-oauth.interceptor.ts:30</a></div>
                 </td>
             </tr>
 
@@ -263,28 +264,16 @@
     <div class="tab-pane fade  tab-source-code" id="c-source">
         <pre class="line-numbers compodoc-sourcecode"><code class="language-typescript">import { Injectable, Optional } from &#x27;@angular/core&#x27;
 
-import {
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest,
-} from &#x27;@angular/common/http&#x27;
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from &#x27;@angular/common/http&#x27;
 import { Observable, of, merge } from &#x27;rxjs&#x27;
-import {
-  catchError,
-  filter,
-  map,
-  take,
-  mergeMap,
-  timeout,
-} from &#x27;rxjs/operators&#x27;
+import { catchError, filter, map, take, mergeMap, timeout } from &#x27;rxjs/operators&#x27;
 import { OAuthResourceServerErrorHandler } from &#x27;./resource-server-error-handler&#x27;
 import { OAuthModuleConfig } from &#x27;../oauth-module.config&#x27;
 import { OAuthService } from &#x27;../oauth-service&#x27;
 
 @Injectable()
 export class DefaultOAuthInterceptor implements HttpInterceptor {
-  constructor(
+  public constructor(
     private oAuthService: OAuthService,
     private errorHandler: OAuthResourceServerErrorHandler,
     @Optional() private moduleConfig: OAuthModuleConfig
@@ -296,43 +285,32 @@ export class DefaultOAuthInterceptor implements HttpInterceptor {
     }
 
     if (this.moduleConfig.resourceServer.allowedUrls) {
-      return !!this.moduleConfig.resourceServer.allowedUrls.find((u) &#x3D;&gt;
-        url.toLowerCase().startsWith(u.toLowerCase())
-      )
+      return !!this.moduleConfig.resourceServer.allowedUrls.find(u &#x3D;&gt; url.toLowerCase().startsWith(u.toLowerCase()))
     }
 
     return true
   }
 
-  public intercept(
-    req: HttpRequest&lt;any&gt;,
-    next: HttpHandler
-  ): Observable&lt;HttpEvent&lt;any&gt;&gt; {
+  public intercept(req: HttpRequest&lt;any&gt;, next: HttpHandler): Observable&lt;HttpEvent&lt;any&gt;&gt; {
     const url &#x3D; req.url.toLowerCase()
 
-    if (
-      !this.moduleConfig ||
-      !this.moduleConfig.resourceServer ||
-      !this.checkUrl(url)
-    ) {
+    if (!this.moduleConfig || !this.moduleConfig.resourceServer || !this.checkUrl(url)) {
       return next.handle(req)
     }
 
     const sendAccessToken &#x3D; this.moduleConfig.resourceServer.sendAccessToken
 
     if (!sendAccessToken) {
-      return next
-        .handle(req)
-        .pipe(catchError((err) &#x3D;&gt; this.errorHandler.handleError(err)))
+      return next.handle(req).pipe(catchError(err &#x3D;&gt; this.errorHandler.handleError(err)))
     }
 
     return merge(
-      of(this.oAuthService.getAccessToken()).pipe(filter((token) &#x3D;&gt; !!token)),
+      of(this.oAuthService.getAccessToken()).pipe(filter(token &#x3D;&gt; !!token)),
       this.oAuthService.events.pipe(
-        filter((e) &#x3D;&gt; e.type &#x3D;&#x3D;&#x3D; &#x27;token_received&#x27;),
+        filter(e &#x3D;&gt; e.type &#x3D;&#x3D;&#x3D; &#x27;token_received&#x27;),
         timeout(this.oAuthService.config.waitForTokenInMsec || 0),
-        catchError((_) &#x3D;&gt; of(null)), // timeout is not an error
-        map((_) &#x3D;&gt; this.oAuthService.getAccessToken())
+        catchError(_ &#x3D;&gt; of(null)), // timeout is not an error
+        map(_ &#x3D;&gt; this.oAuthService.getAccessToken())
       )
     ).pipe(
       take(1),
@@ -343,9 +321,7 @@ export class DefaultOAuthInterceptor implements HttpInterceptor {
           req &#x3D; req.clone({ headers })
         }
 
-        return next
-          .handle(req)
-          .pipe(catchError((err) &#x3D;&gt; this.errorHandler.handleError(err)))
+        return next.handle(req).pipe(catchError(err &#x3D;&gt; this.errorHandler.handleError(err)))
       })
     )
   }

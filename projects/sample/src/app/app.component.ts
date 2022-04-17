@@ -21,15 +21,13 @@ export class AppComponent {
     }
 
     // Automatically load user profile
-    this.oauthService.events
-      .pipe(filter((e) => e.type === 'token_received'))
-      .subscribe((_) => {
-        console.debug('state', this.oauthService.state)
-        this.oauthService.loadUserProfile()
+    this.oauthService.events.pipe(filter((e) => e.type === 'token_received')).subscribe((_) => {
+      console.debug('state', this.oauthService.state)
+      this.oauthService.loadUserProfile()
 
-        const scopes = this.oauthService.getGrantedScopes()
-        console.debug('scopes', scopes)
-      })
+      const scopes = this.oauthService.getGrantedScopes()
+      console.debug('scopes', scopes)
+    })
   }
 
   private configureCodeFlow() {
@@ -66,11 +64,9 @@ export class AppComponent {
       console.debug('oauth/oidc event', e)
     })
 
-    this.oauthService.events
-      .pipe(filter((e) => e.type === 'session_terminated'))
-      .subscribe((e) => {
-        console.debug('Your session has been terminated!')
-      })
+    this.oauthService.events.pipe(filter((e) => e.type === 'session_terminated')).subscribe((e) => {
+      console.debug('Your session has been terminated!')
+    })
   }
 
   //
@@ -79,7 +75,7 @@ export class AppComponent {
 
   private configureWithoutDiscovery() {
     this.oauthService.configure(noDiscoveryAuthConfig)
-    this.oauthService.tokenValidationHandler = new NullValidationHandler()
+    this.oauthService.setTokenValidationHandler(new NullValidationHandler())
     this.oauthService.tryLogin().subscribe((ok) => console.log(`logged in`, ok))
   }
 
@@ -107,7 +103,7 @@ export class AppComponent {
       dummyClientSecret: 'geheim',
     })
 
-    this.oauthService.tokenValidationHandler = new NullValidationHandler()
+    this.oauthService.setTokenValidationHandler(new NullValidationHandler())
 
     this.oauthService.events.subscribe((e) => {
       console.debug('oauth/oidc event', e)
@@ -124,11 +120,9 @@ export class AppComponent {
       )
       .subscribe(() => {})
 
-    this.oauthService.events
-      .pipe(filter((e) => e.type === 'token_expires'))
-      .subscribe((e) => {
-        console.debug('received token_expires event', e)
-        this.oauthService.silentRefresh()
-      })
+    this.oauthService.events.pipe(filter((e) => e.type === 'token_expires')).subscribe((e) => {
+      console.debug('received token_expires event', e)
+      this.oauthService.silentRefresh()
+    })
   }
 }

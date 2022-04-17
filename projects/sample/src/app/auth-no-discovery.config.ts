@@ -1,8 +1,7 @@
 import { AuthConfig } from 'angular-oauth2-oidc'
 
 export const noDiscoveryAuthConfig: AuthConfig = {
-  clientId:
-    '1004270452653-m396kcs7jc3970turlp7ffh6bv4t1b86.apps.googleusercontent.com',
+  clientId: '1004270452653-m396kcs7jc3970turlp7ffh6bv4t1b86.apps.googleusercontent.com',
   redirectUri: 'http://localhost:4200/index.html',
   postLogoutRedirectUri: '',
   loginUrl: 'https://accounts.google.com/o/oauth2/v2/auth',

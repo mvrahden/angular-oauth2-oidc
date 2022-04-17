@@ -9,18 +9,8 @@ import { ActivatedRoute } from '@angular/router'
     <div *ngIf="exitWarning.show" class="alert alert-warning">
       <div>Daten wurden nicht gespeichert! Trotzdem Maske verlassen?</div>
       <div>
-        <a
-          href="javascript:void(0)"
-          (click)="decide(true)"
-          class="btn btn-danger"
-          >Ja</a
-        >
-        <a
-          href="javascript:void(0)"
-          (click)="decide(false)"
-          class="btn btn-default"
-          >Nein</a
-        >
+        <a href="javascript:void(0)" (click)="decide(true)" class="btn btn-danger">Ja</a>
+        <a href="javascript:void(0)" (click)="decide(false)" class="btn btn-default">Nein</a>
       </div>
     </div>
   `,

@@ -1,10 +1,7 @@
 import * as rs from 'jsrsasign'
-import {
-  AbstractValidationHandler,
-  ValidationParams,
-} from 'angular-oauth2-oidc'
+import { AbstractValidationHandler, ValidationParams } from 'angular-oauth2-oidc'
 import { Observable, of, throwError } from 'rxjs'
-import { map, mergeMap } from 'rxjs/operators'
+import { mergeMap, tap } from 'rxjs/operators'
 
 /**
  * Validates the signature of an id_token against one
@@ -16,7 +13,7 @@ export class JwksValidationHandler extends AbstractValidationHandler {
   /**
    * Allowed algorithms
    */
-  allowedAlgorithms: string[] = [
+  private allowedAlgorithms: string[] = [
     'HS256',
     'HS384',
     'HS512',
@@ -34,12 +31,9 @@ export class JwksValidationHandler extends AbstractValidationHandler {
    * Time period in seconds the timestamp in the signature can
    * differ from the current time.
    */
-  gracePeriodInSec = 600
+  public gracePeriodInSec = 600
 
-  validateSignature(
-    params: ValidationParams,
-    retry = false
-  ): Observable<boolean> {
+  public validateSignature(params: ValidationParams, retry = false): Observable<boolean> {
     if (!params.idToken) throwError('Parameter idToken expected!')
     if (!params.idTokenHeader) throwError('Parameter idTokenHandler expected.')
     if (!params.jwks) throwError('Parameter jwks expected!')
@@ -52,22 +46,22 @@ export class JwksValidationHandler extends AbstractValidationHandler {
       throwError('Array keys in jwks missing!')
     }
 
-    let kid: string = params.idTokenHeader['kid']
-    let keys: object[] = params.jwks['keys']
+    const kid: string = params.idTokenHeader['kid']
+    const keys: object[] = params.jwks['keys']
     let key: object
 
-    let alg = params.idTokenHeader['alg']
+    const alg = params.idTokenHeader['alg']
 
     if (kid) {
-      key = keys.find((k) => k['kid'] === kid /* && k['use'] === 'sig' */)
+      key = keys.find(k => k['kid'] === kid /* && k['use'] === 'sig' */)
     } else {
-      let kty = this.alg2kty(alg)
-      let matchingKeys = keys.filter(
-        (k) => k['kty'] === kty && k['use'] === 'sig'
+      const kty = this.alg2kty(alg)
+      const matchingKeys = keys.filter(
+        k => k['kty'] === kty && k['use'] === 'sig'
       )
 
       if (matchingKeys.length > 1) {
-        let error =
+        const error =
           'More than one matching key found. Please specify a kid in the id_token header.'
         console.error(error)
         return throwError(error)
@@ -78,22 +72,19 @@ export class JwksValidationHandler extends AbstractValidationHandler {
 
     if (!key && !retry && params.loadKeys) {
       return params.loadKeys().pipe(
-        map((loadedKeys: object) => {
-          params.jwks = loadedKeys
-          return params
-        }),
-        mergeMap((params) => this.validateSignature(params, true))
+        tap((loadedKeys: object) => params.jwks = loadedKeys),
+        mergeMap(p => this.validateSignature(p as any, true))
       )
     }
 
     if (!key && retry && !kid) {
-      let error = 'No matching key found.'
+      const error = 'No matching key found.'
       console.error(error)
       return throwError(error)
     }
 
     if (!key && retry && kid) {
-      let error =
+      const error =
         'expected key not found in property jwks. ' +
         'This property is most likely loaded with the ' +
         'discovery document. ' +
@@ -104,12 +95,12 @@ export class JwksValidationHandler extends AbstractValidationHandler {
       return throwError(error)
     }
 
-    let keyObj = rs.KEYUTIL.getKey(key)
-    let validationOptions = {
+    const keyObj = rs.KEYUTIL.getKey(key)
+    const validationOptions = {
       alg: this.allowedAlgorithms,
       gracePeriod: this.gracePeriodInSec,
     }
-    let isValid = rs.KJUR.jws.JWS.verifyJWT(
+    const isValid = rs.KJUR.jws.JWS.verifyJWT(
       params.idToken,
       keyObj,
       validationOptions
@@ -133,18 +124,18 @@ export class JwksValidationHandler extends AbstractValidationHandler {
     }
   }
 
-  calcHash(valueToHash: string, algorithm: string): string {
-    let hashAlg = new rs.KJUR.crypto.MessageDigest({ alg: algorithm })
-    let result = hashAlg.digestString(valueToHash)
-    let byteArrayAsString = this.toByteArrayAsString(result)
+  public calcHash(valueToHash: string, algorithm: string): string {
+    const hashAlg = new rs.KJUR.crypto.MessageDigest({ alg: algorithm })
+    const result = hashAlg.digestString(valueToHash)
+    const byteArrayAsString = this.toByteArrayAsString(result)
     return byteArrayAsString
   }
 
-  toByteArrayAsString(hexString: string) {
+  private toByteArrayAsString(hexString: string) {
     let result = ''
     for (let i = 0; i < hexString.length; i += 2) {
-      let hexDigit = hexString.charAt(i) + hexString.charAt(i + 1)
-      let num = parseInt(hexDigit, 16)
+      const hexDigit = hexString.charAt(i) + hexString.charAt(i + 1)
+      const num = parseInt(hexDigit, 16)
       result += String.fromCharCode(num)
     }
     return result

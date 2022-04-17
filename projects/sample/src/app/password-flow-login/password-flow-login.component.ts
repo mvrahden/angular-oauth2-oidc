@@ -24,7 +24,7 @@ export class PasswordFlowLoginComponent implements OnInit {
   ngOnInit() {}
 
   loadUserProfile(): void {
-    this.oauthService.loadUserProfile().then((up) => (this.userProfile = up))
+    this.oauthService.loadUserProfile().subscribe((up) => (this.userProfile = up))
   }
 
   get access_token() {
@@ -49,17 +49,16 @@ export class PasswordFlowLoginComponent implements OnInit {
 
   loginWithPassword() {
     this.oauthService
-      .fetchTokenUsingPasswordFlowAndLoadUserProfile(
-        this.userName,
-        this.password
-      )
-      .then(() => {
-        console.debug('successfully logged in')
-        this.loginFailed = false
-      })
-      .catch((err) => {
-        console.error('error logging in', err)
-        this.loginFailed = true
+      .fetchTokenUsingPasswordFlowAndLoadUserProfile(this.userName, this.password)
+      .subscribe({
+        next: doc => {
+          console.log('login success', doc)
+          this.loginFailed = false
+        },
+        error: (err) => {
+          console.error('login failed', err)
+          this.loginFailed = true
+        },
       })
   }
 

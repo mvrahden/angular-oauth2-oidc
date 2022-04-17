@@ -277,18 +277,15 @@ export class UrlHelperService {
   }
 
   public parseQueryString(queryString: string): object {
-    const data &#x3D; {}
-    let pairs, pair, separatorIndex, escapedKey, escapedValue, key, value
-
-    if (queryString &#x3D;&#x3D;&#x3D; null) {
-      return data
+    if (!queryString) {
+      return {}
     }
 
-    pairs &#x3D; queryString.split(&#x27;&amp;&#x27;)
+    return queryString.split(&#x27;&amp;&#x27;).reduce((data: object, pair) &#x3D;&gt; {
+      let escapedKey: string
+      let escapedValue: string
 
-    for (let i &#x3D; 0; i &lt; pairs.length; i++) {
-      pair &#x3D; pairs[i]
-      separatorIndex &#x3D; pair.indexOf(&#x27;&#x3D;&#x27;)
+      const separatorIndex &#x3D; pair.indexOf(&#x27;&#x3D;&#x27;)
 
       if (separatorIndex &#x3D;&#x3D;&#x3D; -1) {
         escapedKey &#x3D; pair
@@ -298,17 +295,16 @@ export class UrlHelperService {
         escapedValue &#x3D; pair.substr(separatorIndex + 1)
       }
 
-      key &#x3D; decodeURIComponent(escapedKey)
-      value &#x3D; decodeURIComponent(escapedValue)
+      let key &#x3D; decodeURIComponent(escapedKey)
+      const value &#x3D; decodeURIComponent(escapedValue)
 
       if (key.substr(0, 1) &#x3D;&#x3D;&#x3D; &#x27;/&#x27;) {
         key &#x3D; key.substr(1)
       }
 
       data[key] &#x3D; value
-    }
-
-    return data
+      return { ...data }
+    }, {})
   }
 }
 </code></pre>

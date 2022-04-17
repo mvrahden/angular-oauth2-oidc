@@ -117,6 +117,7 @@ you have to override the method calcHash.</p>
                                 <a href="#validateAtHash" >validateAtHash</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                     <span class="modifier">Abstract</span>
                                 <a href="#validateSignature" >validateSignature</a>
                             </li>
@@ -162,8 +163,8 @@ you have to override the method calcHash.</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="94"
-                            class="link-to-prism">projects/lib/src/token-validation/validation-handler.ts:94</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="84"
+                            class="link-to-prism">projects/lib/src/token-validation/validation-handler.ts:84</a></div>
                 </td>
             </tr>
 
@@ -248,8 +249,8 @@ the passed hash algorithm.</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="77"
-                            class="link-to-prism">projects/lib/src/token-validation/validation-handler.ts:77</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="67"
+                            class="link-to-prism">projects/lib/src/token-validation/validation-handler.ts:67</a></div>
                 </td>
             </tr>
 
@@ -327,8 +328,8 @@ from the alg field of an id_token.</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="96"
-                            class="link-to-prism">projects/lib/src/token-validation/validation-handler.ts:96</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="86"
+                            class="link-to-prism">projects/lib/src/token-validation/validation-handler.ts:86</a></div>
                 </td>
             </tr>
 
@@ -398,8 +399,8 @@ from the alg field of an id_token.</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="52"
-                            class="link-to-prism">projects/lib/src/token-validation/validation-handler.ts:52</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="44"
+                            class="link-to-prism">projects/lib/src/token-validation/validation-handler.ts:44</a></div>
                 </td>
             </tr>
 
@@ -455,6 +456,7 @@ from the alg field of an id_token.</p>
                 <td class="col-md-4">
                     <a name="validateSignature"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span class="modifier">Abstract</span>
                         <span ><b>validateSignature</b></span>
                         <a href="#validateSignature"><span class="icon ion-ios-link"></span></a>
@@ -471,8 +473,8 @@ from the alg field of an id_token.</p>
 
             <tr>
                 <td class="col-md-4">
-                    <div class="io-line">Defined in <a href="" data-line="45"
-                            class="link-to-prism">projects/lib/src/token-validation/validation-handler.ts:45</a></div>
+                    <div class="io-line">Defined in <a href="" data-line="39"
+                            class="link-to-prism">projects/lib/src/token-validation/validation-handler.ts:39</a></div>
                 </td>
             </tr>
 
@@ -553,16 +555,12 @@ export abstract class ValidationHandler {
   /**
    * Validates the signature of an id_token.
    */
-  public abstract validateSignature(
-    validationParams: ValidationParams
-  ): Observable&lt;boolean&gt;
+  public abstract validateSignature(validationParams: ValidationParams): Observable&lt;boolean&gt;
 
   /**
    * Validates the at_hash in an id_token against the received access_token.
    */
-  public abstract validateAtHash(
-    validationParams: ValidationParams
-  ): Observable&lt;boolean&gt;
+  public abstract validateAtHash(validationParams: ValidationParams): Observable&lt;boolean&gt;
 }
 
 /**
@@ -570,29 +568,23 @@ export abstract class ValidationHandler {
  * the method validateAtHash. However, to make use of it,
  * you have to override the method calcHash.
  */
-export abstract class AbstractValidationHandler
-  implements ValidationHandler, HashHandler
-{
+export abstract class AbstractValidationHandler implements ValidationHandler, HashHandler {
   /**
    * Validates the signature of an id_token.
    */
-  abstract validateSignature(
-    validationParams: ValidationParams
-  ): Observable&lt;boolean&gt;
+  public abstract validateSignature(validationParams: ValidationParams): Observable&lt;boolean&gt;
 
   /**
    * Validates the at_hash in an id_token against the received access_token.
    */
   public validateAtHash(params: ValidationParams): Observable&lt;boolean&gt; {
-    let hashAlg &#x3D; this.inferHashAlgorithm(params.idTokenHeader)
+    const hashAlg &#x3D; this.inferHashAlgorithm(params.idTokenHeader)
+    const tokenHash &#x3D; this.calcHash(params.accessToken, hashAlg) // sha256(accessToken, { asString: true })
+    const leftMostHalf &#x3D; tokenHash.substr(0, tokenHash.length / 2)
 
-    let tokenHash &#x3D; this.calcHash(params.accessToken, hashAlg) // sha256(accessToken, { asString: true })
+    const atHash &#x3D; base64UrlEncode(leftMostHalf)
 
-    let leftMostHalf &#x3D; tokenHash.substr(0, tokenHash.length / 2)
-
-    let atHash &#x3D; base64UrlEncode(leftMostHalf)
-
-    let claimsAtHash &#x3D; params.idTokenClaims[&#x27;at_hash&#x27;].replace(/&#x3D;/g, &#x27;&#x27;)
+    const claimsAtHash &#x3D; params.idTokenClaims[&#x27;at_hash&#x27;].replace(/&#x3D;/g, &#x27;&#x27;)
 
     if (atHash !&#x3D;&#x3D; claimsAtHash) {
       console.error(&#x27;exptected at_hash: &#x27; + atHash)
@@ -609,7 +601,7 @@ export abstract class AbstractValidationHandler
    * @param jwtHeader the id_token&#x27;s parsed header
    */
   protected inferHashAlgorithm(jwtHeader: object): string {
-    let alg: string &#x3D; jwtHeader[&#x27;alg&#x27;]
+    const alg: string &#x3D; jwtHeader[&#x27;alg&#x27;]
 
     if (!alg.match(/^.S[0-9]{3}$/)) {
       throw new Error(&#x27;Algorithm not supported: &#x27; + alg)

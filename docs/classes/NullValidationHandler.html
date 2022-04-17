@@ -98,9 +98,11 @@ Can be used to skip validation (at your own risk).</p>
                     <td class="col-md-4">
                         <ul class="index-list">
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#validateAtHash" >validateAtHash</a>
                             </li>
                             <li>
+                                    <span class="modifier">Public</span>
                                 <a href="#validateSignature" >validateSignature</a>
                             </li>
                         </ul>
@@ -128,6 +130,7 @@ Can be used to skip validation (at your own risk).</p>
                 <td class="col-md-4">
                     <a name="validateAtHash"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span ><b>validateAtHash</b></span>
                         <a href="#validateAtHash"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -135,7 +138,8 @@ Can be used to skip validation (at your own risk).</p>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>validateAtHash(validationParams: <a href="../interfaces/ValidationParams.html" target="_self">ValidationParams</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>validateAtHash(validationParams: <a href="../interfaces/ValidationParams.html" target="_self">ValidationParams</a>)</code>
                 </td>
             </tr>
 
@@ -197,6 +201,7 @@ Can be used to skip validation (at your own risk).</p>
                 <td class="col-md-4">
                     <a name="validateSignature"></a>
                     <span class="name">
+                        <span class="modifier">Public</span>
                         <span ><b>validateSignature</b></span>
                         <a href="#validateSignature"><span class="icon ion-ios-link"></span></a>
                     </span>
@@ -204,7 +209,8 @@ Can be used to skip validation (at your own risk).</p>
             </tr>
             <tr>
                 <td class="col-md-4">
-<code>validateSignature(validationParams: <a href="../interfaces/ValidationParams.html" target="_self">ValidationParams</a>)</code>
+                    <span class="modifier-icon icon ion-ios-reset"></span>
+                    <code>validateSignature(validationParams: <a href="../interfaces/ValidationParams.html" target="_self">ValidationParams</a>)</code>
                 </td>
             </tr>
 
@@ -278,10 +284,10 @@ import { ValidationHandler, ValidationParams } from &#x27;./validation-handler&#
  * Can be used to skip validation (at your own risk).
  */
 export class NullValidationHandler implements ValidationHandler {
-  validateSignature(validationParams: ValidationParams): Observable&lt;any&gt; {
+  public validateSignature(validationParams: ValidationParams): Observable&lt;any&gt; {
     return of(null)
   }
-  validateAtHash(validationParams: ValidationParams): Observable&lt;boolean&gt; {
+  public validateAtHash(validationParams: ValidationParams): Observable&lt;boolean&gt; {
     return of(true)
   }
 }

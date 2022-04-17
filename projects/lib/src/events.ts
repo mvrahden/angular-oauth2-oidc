@@ -42,11 +42,7 @@ export class OAuthInfoEvent extends OAuthEvent {
 }
 
 export class OAuthErrorEvent extends OAuthEvent {
-  public constructor(
-    type: EventType,
-    public readonly reason: object,
-    public readonly params: object = null
-  ) {
+  public constructor(type: EventType, public readonly reason: object, public readonly params: object = null) {
     super(type)
   }
 }
