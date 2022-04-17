@@ -1,11 +1,6 @@
 import { MemoryStorage } from './types'
 
-export function createDefaultLogger() {
-  return console
-}
+export const createDefaultLogger = () => console
 
-export function createDefaultStorage() {
-  return typeof sessionStorage !== 'undefined'
-    ? sessionStorage
-    : new MemoryStorage()
-}
+export const createDefaultStorage = () =>
+  typeof sessionStorage !== 'undefined' ? sessionStorage : new MemoryStorage()

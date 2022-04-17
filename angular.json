@@ -21,6 +21,15 @@
               "tsConfig": "projects/lib/tsconfig.lib.prod.json"
             }
           }
+        },
+        "lint": {
+          "builder": "@angular-eslint/builder:lint",
+          "options": {
+            "lintFilePatterns": [
+              "projects/lib/**/*.ts",
+              "projects/lib/**/*.html"
+            ]
+          }
         }
       }
     },
@@ -118,7 +127,6 @@
         }
       }
     },
-
     "quickstart-demo": {
       "projectType": "application",
       "schematics": {},
@@ -139,7 +147,9 @@
               "projects/quickstart-demo/src/favicon.ico",
               "projects/quickstart-demo/src/assets"
             ],
-            "styles": ["projects/quickstart-demo/src/styles.css"],
+            "styles": [
+              "projects/quickstart-demo/src/styles.css"
+            ],
             "scripts": [],
             "vendorChunk": true,
             "extractLicenses": false,
@@ -203,7 +213,9 @@
               "projects/quickstart-demo/src/favicon.ico",
               "projects/quickstart-demo/src/assets"
             ],
-            "styles": ["projects/quickstart-demo/src/styles.css"],
+            "styles": [
+              "projects/quickstart-demo/src/styles.css"
+            ],
             "scripts": []
           }
         },
@@ -221,7 +233,6 @@
         }
       }
     },
-
     "angular-oauth2-oidc-jwks": {
       "projectType": "library",
       "root": "projects/angular-oauth2-oidc-jwks",
@@ -252,6 +263,7 @@
     }
   },
   "cli": {
-    "analytics": false
+    "analytics": false,
+    "defaultCollection": "@angular-eslint/schematics"
   }
 }

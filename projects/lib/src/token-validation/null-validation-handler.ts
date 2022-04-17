@@ -6,10 +6,10 @@ import { ValidationHandler, ValidationParams } from './validation-handler'
  * Can be used to skip validation (at your own risk).
  */
 export class NullValidationHandler implements ValidationHandler {
-  validateSignature(validationParams: ValidationParams): Observable<any> {
+  public validateSignature(validationParams: ValidationParams): Observable<any> {
     return of(null)
   }
-  validateAtHash(validationParams: ValidationParams): Observable<boolean> {
+  public validateAtHash(validationParams: ValidationParams): Observable<boolean> {
     return of(true)
   }
 }

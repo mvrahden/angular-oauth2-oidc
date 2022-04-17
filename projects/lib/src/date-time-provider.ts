@@ -1,17 +1,17 @@
 import { Injectable } from '@angular/core'
 
 export abstract class DateTimeProvider {
-  abstract now(): number
-  abstract new(): Date
+  public abstract now(): number
+  public abstract new(): Date
 }
 
 @Injectable()
 export class SystemDateTimeProvider extends DateTimeProvider {
-  now(): number {
+  public now(): number {
     return Date.now()
   }
 
-  new(): Date {
+  public new(): Date {
     return new Date()
   }
 }

@@ -11,10 +11,8 @@ export abstract class HashHandler {
 
 @Injectable()
 export class DefaultHashHandler implements HashHandler {
-  toSha256(valueToHash: string): string {
-    return DefaultHashHandler.encodeUTF8(
-      fsha256(DefaultHashHandler.decodeUTF8(valueToHash))
-    )
+  public toSha256(valueToHash: string): string {
+    return DefaultHashHandler.encodeUTF8(fsha256(DefaultHashHandler.decodeUTF8(valueToHash)))
   }
 
   private static decodeUTF8(s) {
@@ -33,18 +31,18 @@ export class DefaultHashHandler implements HashHandler {
     return s.join('')
   }
 
-  toHashString2(byteArray: number[]) {
+  public toHashString2(byteArray: number[]) {
     let result = ''
-    for (let e of byteArray) {
+    for (const e of byteArray) {
       result += String.fromCharCode(e)
     }
     return result
   }
 
-  toHashString(buffer: ArrayBuffer) {
+  public toHashString(buffer: ArrayBuffer) {
     const byteArray = new Uint8Array(buffer)
     let result = ''
-    for (let e of byteArray) {
+    for (const e of byteArray) {
       result += String.fromCharCode(e)
     }
     return result

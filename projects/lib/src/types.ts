@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 import { Injectable } from '@angular/core'
 
 /**
@@ -14,7 +15,7 @@ export class LoginOptions {
    * question mark is optional, but may be present following
    * the hash symbol.
    */
-  customHashFragment?: string
+  public customHashFragment?: string
 
   /**
    * Set this to true to disable the oauth2 state
@@ -24,7 +25,7 @@ export class LoginOptions {
    * this, this can be set to true when only doing
    * OIDC.
    */
-  disableOAuth2StateCheck?: boolean
+  public disableOAuth2StateCheck?: boolean
 
   /**
    * Set this to true to disable the nonce
@@ -33,7 +34,7 @@ export class LoginOptions {
    * This flag should never be true in
    * production environments.
    */
-  disableNonceCheck? = false
+  public disableNonceCheck? = false
 
   /**
    * Normally, you want to clear your hash fragment after
@@ -41,14 +42,14 @@ export class LoginOptions {
    * anymore in the url. If not, set this to true. For code flow
    * this controls removing query string values.
    */
-  preventClearHashAfterLogin? = false
+  public preventClearHashAfterLogin? = false
 
   /**
    * Set this for code flow if you used a custom redirect Uri
    * when retrieving the code. This is used internally for silent
    * refresh and popup flows.
    */
-  customRedirectUri?: string
+  public customRedirectUri?: string
 }
 
 /**
@@ -58,11 +59,11 @@ export class LoginOptions {
  * through dependency injection.
  */
 export abstract class OAuthLogger {
-  abstract debug(message?: any, ...optionalParams: any[]): void
-  abstract info(message?: any, ...optionalParams: any[]): void
-  abstract log(message?: any, ...optionalParams: any[]): void
-  abstract warn(message?: any, ...optionalParams: any[]): void
-  abstract error(message?: any, ...optionalParams: any[]): void
+  public abstract debug(message?: any, ...optionalParams: any[]): void
+  public abstract info(message?: any, ...optionalParams: any[]): void
+  public abstract log(message?: any, ...optionalParams: any[]): void
+  public abstract warn(message?: any, ...optionalParams: any[]): void
+  public abstract error(message?: any, ...optionalParams: any[]): void
 }
 
 /**
@@ -72,24 +73,24 @@ export abstract class OAuthLogger {
  * but you can also create your own implementations.
  */
 export abstract class OAuthStorage {
-  abstract getItem(key: string): string | null
-  abstract removeItem(key: string): void
-  abstract setItem(key: string, data: string): void
+  public abstract getItem(key: string): string | null
+  public abstract removeItem(key: string): void
+  public abstract setItem(key: string, data: string): void
 }
 
 @Injectable()
 export class MemoryStorage implements OAuthStorage {
   private data = new Map<string, string>()
 
-  getItem(key: string): string {
+  public getItem(key: string): string {
     return this.data.get(key)
   }
 
-  removeItem(key: string): void {
+  public removeItem(key: string): void {
     this.data.delete(key)
   }
 
-  setItem(key: string, data: string): void {
+  public setItem(key: string, data: string): void {
     this.data.set(key, data)
   }
 }
@@ -99,10 +100,10 @@ export class MemoryStorage implements OAuthStorage {
  * and the parsed claims from the id-token.
  */
 export class ReceivedTokens {
-  idToken: string
-  accessToken: string
-  idClaims?: object
-  state?: string
+  public idToken: string
+  public accessToken: string
+  public idClaims?: object
+  public state?: string
 }
 
 /**

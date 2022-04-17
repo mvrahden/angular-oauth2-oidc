@@ -26,26 +26,26 @@ export type EventType =
   | 'token_revoke_error'
 
 export abstract class OAuthEvent {
-  constructor(readonly type: EventType) {}
+  public constructor(public readonly type: EventType) {}
 }
 
 export class OAuthSuccessEvent extends OAuthEvent {
-  constructor(type: EventType, readonly info: any = null) {
+  public constructor(type: EventType, public readonly info: any = null) {
     super(type)
   }
 }
 
 export class OAuthInfoEvent extends OAuthEvent {
-  constructor(type: EventType, readonly info: any = null) {
+  public constructor(type: EventType, public readonly info: any = null) {
     super(type)
   }
 }
 
 export class OAuthErrorEvent extends OAuthEvent {
-  constructor(
+  public constructor(
     type: EventType,
-    readonly reason: object,
-    readonly params: object = null
+    public readonly reason: object,
+    public readonly params: object = null
   ) {
     super(type)
   }

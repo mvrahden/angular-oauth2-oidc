@@ -23,7 +23,7 @@ This also results in smaller bundle sizes.
  * to a library of its own, namely angular-oauth2-oidc-utils
  */
 export class JwksValidationHandler extends NullValidationHandler {
-  constructor() {
+  public constructor() {
     super()
     console.error(err)
   }

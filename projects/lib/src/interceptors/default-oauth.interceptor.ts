@@ -1,27 +1,15 @@
 import { Injectable, Optional } from '@angular/core'
 
-import {
-  HttpEvent,
-  HttpHandler,
-  HttpInterceptor,
-  HttpRequest,
-} from '@angular/common/http'
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http'
 import { Observable, of, merge } from 'rxjs'
-import {
-  catchError,
-  filter,
-  map,
-  take,
-  mergeMap,
-  timeout,
-} from 'rxjs/operators'
+import { catchError, filter, map, take, mergeMap, timeout } from 'rxjs/operators'
 import { OAuthResourceServerErrorHandler } from './resource-server-error-handler'
 import { OAuthModuleConfig } from '../oauth-module.config'
 import { OAuthService } from '../oauth-service'
 
 @Injectable()
 export class DefaultOAuthInterceptor implements HttpInterceptor {
-  constructor(
+  public constructor(
     private oAuthService: OAuthService,
     private errorHandler: OAuthResourceServerErrorHandler,
     @Optional() private moduleConfig: OAuthModuleConfig
@@ -33,34 +21,23 @@ export class DefaultOAuthInterceptor implements HttpInterceptor {
     }
 
     if (this.moduleConfig.resourceServer.allowedUrls) {
-      return !!this.moduleConfig.resourceServer.allowedUrls.find((u) =>
-        url.toLowerCase().startsWith(u.toLowerCase())
-      )
+      return !!this.moduleConfig.resourceServer.allowedUrls.find((u) => url.toLowerCase().startsWith(u.toLowerCase()))
     }
 
     return true
   }
 
-  public intercept(
-    req: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
+  public intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const url = req.url.toLowerCase()
 
-    if (
-      !this.moduleConfig ||
-      !this.moduleConfig.resourceServer ||
-      !this.checkUrl(url)
-    ) {
+    if (!this.moduleConfig || !this.moduleConfig.resourceServer || !this.checkUrl(url)) {
       return next.handle(req)
     }
 
     const sendAccessToken = this.moduleConfig.resourceServer.sendAccessToken
 
     if (!sendAccessToken) {
-      return next
-        .handle(req)
-        .pipe(catchError((err) => this.errorHandler.handleError(err)))
+      return next.handle(req).pipe(catchError((err) => this.errorHandler.handleError(err)))
     }
 
     return merge(
@@ -80,9 +57,7 @@ export class DefaultOAuthInterceptor implements HttpInterceptor {
           req = req.clone({ headers })
         }
 
-        return next
-          .handle(req)
-          .pipe(catchError((err) => this.errorHandler.handleError(err)))
+        return next.handle(req).pipe(catchError((err) => this.errorHandler.handleError(err)))
       })
     )
   }

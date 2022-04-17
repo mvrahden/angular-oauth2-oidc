@@ -1,5 +1,5 @@
 export abstract class OAuthModuleConfig {
-  resourceServer: OAuthResourceServerConfig
+  public resourceServer: OAuthResourceServerConfig
 }
 
 export abstract class OAuthResourceServerConfig {
@@ -8,7 +8,7 @@ export abstract class OAuthResourceServerConfig {
    * If there is an ResourceServerErrorHandler registered, it is used for them.
    * If sendAccessToken is set to true, the access_token is send to them too.
    */
-  allowedUrls?: Array<string>
-  sendAccessToken: boolean
-  customUrlValidation?: (url: string) => boolean
+  public allowedUrls?: Array<string>
+  public sendAccessToken: boolean
+  public customUrlValidation?: (url: string) => boolean
 }
