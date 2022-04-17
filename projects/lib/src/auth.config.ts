@@ -24,6 +24,8 @@ export class AuthConfig {
   /**
    * The auth server's endpoint that allows to log
    * the user in when using implicit flow.
+   *
+   * @deprecated
    */
   public loginUrl? = ''
 
@@ -39,12 +41,16 @@ export class AuthConfig {
   /**
    * Defines whether to use OpenId Connect during
    * implicit flow.
+   *
+   * @deprecated
    */
   public oidc? = true
 
   /**
    * Defines whether to request an access token during
    * implicit flow.
+   *
+   * @deprecated
    */
   public requestAccessToken? = true
 
@@ -147,9 +153,12 @@ export class AuthConfig {
   /**
    * Map with additional query parameter that are appended to
    * the request when initializing implicit flow.
+   *
+   * @deprecated
    */
   public customQueryParams?: object = null
 
+  // TODO
   public silentRefreshIFrameName? = 'angular-oauth-oidc-silent-refresh-iframe'
 
   /**
@@ -241,10 +250,10 @@ export class AuthConfig {
    * with implicit flow, you don't need to explicitly turn it on in
    * this case.
    */
-  public useSilentRefresh?
+  public useSilentRefresh?: boolean
 
   /**
-   * Code Flow is by defauld used together with PKCI which is also higly recommented.
+   * Code Flow is used by default together with PKCE which is also higly recommended.
    * You can disbale it here by setting this flag to true.
    * https://tools.ietf.org/html/rfc7636#section-1.1
    */
